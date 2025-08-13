@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import uvicorn
 import logging
 from contextlib import asynccontextmanager

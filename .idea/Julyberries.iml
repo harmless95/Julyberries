@@ -3,6 +3,7 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/auth" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/auth/project_auth" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/auth/.venv" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.13 virtualenv at I:\progi\pytho\Julyberries\auth\.venv (2)" jdkType="Python SDK" />

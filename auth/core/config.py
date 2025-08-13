@@ -1,4 +1,5 @@
 from typing import Literal
+from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import PostgresDsn, BaseModel
@@ -6,7 +7,7 @@ from pydantic import PostgresDsn, BaseModel
 # fmt: off
 LOG_DEFAULT_FORMAT = "[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(levelname)-7s - %(message)s"
 # fmt: on
-
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 class PrefixV1(BaseModel):
     prefix: str = "/v1"
@@ -70,10 +71,16 @@ class ConfigRedis(BaseSettings):
     user: str = "user"
     user_password: str = "password"
 
+class ConfigRoles(BaseModel):
+    name_roles: tuple[str] = ("user", "manager", "admin",)
+
 
 class Setting(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=(".env.template", ".env"),
+        env_file=(
+            BASE_DIR / ".env.template",
+            BASE_DIR / ".env",
+        ),
         case_sensitive=False,
         env_nested_delimiter="__",
         env_prefix="APP_CONFIG__",
@@ -84,6 +91,7 @@ class Setting(BaseSettings):
     api: PrefixConfig = PrefixConfig()
     log: LoggingConfig = LoggingConfig()
     redis: ConfigRedis = ConfigRedis()
+    roles: ConfigRoles = ConfigRoles()
 
 
 setting = Setting()

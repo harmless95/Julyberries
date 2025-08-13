@@ -1,5 +1,4 @@
 from fastapi import APIRouter
-import fastapi
 
 from core.config import setting
 from core.schemas.user import UserRead, UserCreate

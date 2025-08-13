@@ -4,7 +4,8 @@ from os import getenv
 
 from api.dependencies.auntifecation import get_user_db, get_user_manager
 from core.auntefication.user_manager import UserManager
-from core.model import User, db_helper
+from core.model import User
+from core.model import helper_db
 from core.schemas.user import UserCreate
 
 get_user_db_context = contextlib.asynccontextmanager(get_user_db)
@@ -39,7 +40,7 @@ async def create_superuser(
         is_superuser=is_superuser,
         is_verified=is_verified,
     )
-    async with db_helper.fabric_session() as session:
+    async with helper_db.fabric_session() as session:
         async with get_user_db_context(session) as users_db:
             async with get_users_manager_context(users_db) as user_manager:
                 return await create_user(
