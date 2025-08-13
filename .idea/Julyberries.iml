@@ -5,7 +5,7 @@
       <sourceFolder url="file://$MODULE_DIR$/auth" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/auth/.venv" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.12" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.13 virtualenv at I:\progi\pytho\Julyberries\auth\.venv (2)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
