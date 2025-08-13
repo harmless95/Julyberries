@@ -37,7 +37,7 @@ class HelperDB:
 
 
 helper_db = HelperDB(
-    url=setting.db.url,
+    url=str(setting.db.url),
     echo=setting.db.echo,
     echo_pool=setting.db.echo_pool,
     pool_size=setting.db.pool_size,
