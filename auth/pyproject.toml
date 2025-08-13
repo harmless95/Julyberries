@@ -6,6 +6,7 @@ python="^3.12"
 fastapi = "^0.116.1"
 pydantic-settings = "^2.10.1"
 sqlalchemy = "^2.0.43"
+fastapi-users = {extras = ["sqlalchemy"], version = "^14.0.1"}
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.1.0"
