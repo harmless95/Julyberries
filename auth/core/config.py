@@ -81,7 +81,7 @@ class Setting(BaseSettings):
     db: DataBaseConfig
     access_token: AccessTokenConfig
     run: Run = Run()
-    prefix: PrefixConfig = PrefixConfig()
+    api: PrefixConfig = PrefixConfig()
     log: LoggingConfig = LoggingConfig()
     redis: ConfigRedis = ConfigRedis()
 
