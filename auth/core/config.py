@@ -10,6 +10,12 @@ class PrefixConfig(BaseModel):
     prefix: str = "/api"
     v1: PrefixV1 = PrefixV1()
 
+    @property
+    def bearer_token_url(self) -> str:
+        parts = (self.prefix, self.v1.prefix, self.v1.auth, "/login")
+        path = "".join(parts)
+        return path.removeprefix("/")
+
 
 class Run(BaseModel):
     host: str = "0.0.0.0"
