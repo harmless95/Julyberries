@@ -22,3 +22,5 @@ PostgreSQL, MongoDB, Redis, Kafka, Celery, и инфраструктуры дл�
 5.3. Брокера задач для Celery.
 6. Все сервисы логируют в ELK Stack, метрики собираются через Prometheus +
 Grafana
+````
+python -c "import secrets; print(secrets.token_hex())" - для генерации токена
