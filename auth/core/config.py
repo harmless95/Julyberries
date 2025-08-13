@@ -1,5 +1,11 @@
+from typing import Literal
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import PostgresDsn, BaseModel
+
+# fmt: off
+LOG_DEFAULT_FORMAT = "[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(levelname)-7s - %(message)s"
+# fmt: on
 
 
 class PrefixV1(BaseModel):
@@ -32,6 +38,29 @@ class DataBaseConfig(BaseModel):
     pool_size: int = 50
     max_overflow: int = 10
 
+class AccessTokenConfig(BaseModel):
+    lifetime_seconds: int = 3600
+    reset_password_token_secret: str
+    verification_token_secret: str
+
+
+class LoggingConfig(BaseModel):
+    log_level: Literal[
+        "debag",
+        "info",
+        "warning",
+        "error",
+        "critical",
+    ] = "info"
+    log_format: str = LOG_DEFAULT_FORMAT
+
+
+class ConfigRedis(BaseSettings):
+    url: str = "redis://localhost"
+    password: str = "password"
+    user: str = "user"
+    user_password: str = "password"
+
 
 class Setting(BaseSettings):
     model_config = SettingsConfigDict(
@@ -41,8 +70,11 @@ class Setting(BaseSettings):
         env_prefix="APP_CONFIG__",
     )
     db: DataBaseConfig
+    access_token: AccessTokenConfig
     run: Run = Run()
     prefix: PrefixConfig = PrefixConfig()
+    log: LoggingConfig = LoggingConfig()
+    redis: ConfigRedis = ConfigRedis()
 
 
 setting = Setting()
