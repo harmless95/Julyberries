@@ -8,7 +8,7 @@ from core.config import setting
 from core.model import helper_db
 
 logging.basicConfig(
-    level=setting.log.log_level,
+    level=logging.INFO,
     format=setting.log.log_format,
 )
 
