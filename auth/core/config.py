@@ -4,6 +4,9 @@ from pydantic import PostgresDsn, BaseModel
 
 class PrefixV1(BaseModel):
     prefix: str = "/v1"
+    auth: str = "/auth"
+    users: str = "/users"
+    messages: str = "/messages"
 
 
 class PrefixConfig(BaseModel):
