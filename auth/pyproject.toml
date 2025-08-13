@@ -8,6 +8,7 @@ pydantic-settings = "^2.10.1"
 sqlalchemy = "^2.0.43"
 fastapi-users = {extras = ["sqlalchemy"], version = "^14.0.1"}
 uvicorn = "^0.35.0"
+alembic = "^1.16.4"
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.1.0"
