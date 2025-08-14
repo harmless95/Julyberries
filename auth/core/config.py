@@ -64,12 +64,16 @@ class LoggingConfig(BaseModel):
     ] = "info"
     log_format: str = LOG_DEFAULT_FORMAT
 
+class AuthJWT(BaseModel):
+    private_key_path: Path = BASE_DIR / "certs" / "jwt-private.pem"
+    public_key_path: Path = BASE_DIR / "certs" / "jwt-public.pem"
+    algorithm: str = "RS256"
+    access_token_expire_minutes: int = 15
+    refresh_token_expire_days: int = 30
 
-class ConfigRedis(BaseSettings):
-    url: str = "redis://localhost"
-    password: str = "password"
-    user: str = "user"
-    user_password: str = "password"
+    token_type_field: str = "type"
+    access_token_type: str = "access"
+    refresh_token_type: str = "refresh"
 
 class ConfigRoles(BaseModel):
     name_roles: tuple[str] = ("user", "manager", "admin",)
@@ -90,8 +94,8 @@ class Setting(BaseSettings):
     run: Run = Run()
     api: PrefixConfig = PrefixConfig()
     log: LoggingConfig = LoggingConfig()
-    redis: ConfigRedis = ConfigRedis()
     roles: ConfigRoles = ConfigRoles()
+    auth_jwt: AuthJWT = AuthJWT()
 
 
 setting = Setting()

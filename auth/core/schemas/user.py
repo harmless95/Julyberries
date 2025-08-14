@@ -1,15 +1,49 @@
-from fastapi_users import schemas
+from datetime import datetime
+from typing import TYPE_CHECKING, Optional
+from pydantic import EmailStr, BaseModel, ConfigDict
 
-from core.types.user_id import UserIdType
-
-
-class UserRead(schemas.BaseUser[UserIdType]):
-    pass
-
-
-class UserCreate(schemas.BaseUserCreate):
-    pass
+if TYPE_CHECKING:
+    from core.model import Role
 
 
-class UserUpdate(schemas.BaseUserUpdate):
-    pass
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+    name: str
+    role_id: Optional[int]
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class UserRead(BaseModel):
+    id: int
+    email: EmailStr
+    name: str
+    role_id: Optional["Role"]
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class UserUpdate(BaseModel):
+    email: EmailStr | None = None
+    password: str | None = None
+    name: str | None = None
+    role_id: Optional[int] | None = None
+    created_at: datetime | None = None
+
+
+class UserToken(BaseModel):
+    email: EmailStr
+    password: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class UserSchema(BaseModel):
+    model_config = ConfigDict(strict=True)
+
+    email: EmailStr
+    password: str
+    name: str

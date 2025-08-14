@@ -10,6 +10,7 @@ fastapi-users = {extras = ["sqlalchemy"], version = "^14.0.1"}
 uvicorn = "^0.35.0"
 alembic = "^1.16.4"
 asyncpg = "^0.30.0"
+pyjwt = {extras = ["crypto"], version = "^2.10.1"}
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.1.0"
