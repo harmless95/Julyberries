@@ -8,8 +8,12 @@ class RoleCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class RoleRead(RoleCreate):
+class RoleRead(BaseModel):
     id: int
+    name: str
+    description: str
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class RoleUpdate(BaseModel):
