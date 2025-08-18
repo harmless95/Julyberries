@@ -3,7 +3,8 @@ from typing import TYPE_CHECKING
 
 from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, ForeignKey, DateTime
+from sqlalchemy import String, ForeignKey
+from sqlalchemy.dialects.postgresql import TIMESTAMP
 
 from core.model import Base
 from .mixins.id_int_primary_key import IdIntPrKey
@@ -25,7 +26,9 @@ class User(Base, IdIntPrKey):
     name: Mapped[str] = mapped_column(String)
     role_id: Mapped[int] = mapped_column(ForeignKey("roles.id"))
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+        TIMESTAMP(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
     )
 
     role: Mapped["Role"] = relationship("Role", back_populates="users")
