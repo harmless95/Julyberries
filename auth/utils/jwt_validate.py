@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import bcrypt
 import jwt
@@ -18,7 +18,7 @@ def encode_jwt(
     expire_timedelta: timedelta | None = None,
 ) -> str:
     to_encode = payload.copy()
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     if expire_timedelta:
         expire = now + expire_timedelta
     else:
