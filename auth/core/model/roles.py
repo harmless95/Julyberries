@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 from sqlalchemy import String, Text
+from fastapi import HTTPException, status
 
 from core.model import Base
 from core.model.mixins.id_int_primary_key import IdIntPrKey
@@ -27,5 +28,8 @@ class Role(Base, IdIntPrKey):
     @validates("name")
     def validates_name(cls, key, name_role):
         if name_role not in setting.roles.name_roles:
-            raise ValueError(f"Invalid name role: {name_role}")
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"Invalid name role: {name_role}, valid (user, manager, admin)",
+            )
         return name_role
