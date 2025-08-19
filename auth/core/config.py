@@ -10,22 +10,10 @@ LOG_DEFAULT_FORMAT = "[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(leve
 # fmt: on
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-class PrefixV1(BaseModel):
-    prefix: str = "/v1"
-    auth: str = "/auth"
-    users: str = "/users"
-    messages: str = "/messages"
-
 
 class PrefixConfig(BaseModel):
-    prefix: str = "/api"
-    v1: PrefixV1 = PrefixV1()
-
-    @property
-    def bearer_token_url(self) -> str:
-        parts = (self.prefix, self.v1.prefix, self.v1.auth, "/login")
-        path = "".join(parts)
-        return path.removeprefix("/")
+    prefix: str = "/auth"
+    tags: str = "Auth"
 
 
 class Run(BaseModel):
@@ -47,12 +35,6 @@ class DataBaseConfig(BaseModel):
         "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
         "pk": "pk_%(table_name)s",
     }
-
-
-class AccessTokenConfig(BaseModel):
-    lifetime_seconds: int = 3600
-    reset_password_token_secret: str
-    verification_token_secret: str
 
 
 class LoggingConfig(BaseModel):
@@ -82,7 +64,6 @@ class AuthJWT(BaseModel):
         tokenUrl="/auth/login/",
     )
 
-
 class ConfigRoles(BaseModel):
     name_roles: tuple[str] = ("user", "manager", "admin",)
 
@@ -98,7 +79,6 @@ class Setting(BaseSettings):
         env_prefix="APP_CONFIG__",
     )
     db: DataBaseConfig
-    access_token: AccessTokenConfig
     run: Run = Run()
     api: PrefixConfig = PrefixConfig()
     log: LoggingConfig = LoggingConfig()
