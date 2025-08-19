@@ -5,3 +5,4 @@ package-mode=false
 python="^3.13.5"
 fastapi = "^0.116.1"
 alembic = "^1.16.4"
+uvicorn = "^0.35.0"
