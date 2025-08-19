@@ -5,13 +5,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.CRUD.user_crud import create_user, auth_user
 from api.dependecies.helpers import create_access_token, create_refresh_token
-from api.dependecies.user_token import get_user_token
+from api.dependecies.user_token import get_user_token, get_user_refresh_token
 from core.config import setting
 from core.model import helper_db, User
 from core.schemas.token import TokenBase
 from core.schemas.user import UserCreate, UserRead
 
-router = APIRouter(prefix="/auth", tags=["Auth"])
+router = APIRouter(
+    prefix="/auth", tags=["Auth"], dependencies=[Depends(setting.auth_jwt.http_bearer)]
+)
 
 
 @router.post(
@@ -60,3 +62,21 @@ async def user_me(
         "name": user.name,
         "logged_in_at": logged_in_at,
     }
+
+
+@router.post(
+    "/refresh/",
+    response_model=TokenBase,
+    response_model_exclude_none=True,
+)
+async def refresh_jwt_token(
+    session: Annotated[AsyncSession, Depends(helper_db.session_getter)],
+    data_user: str = Depends(setting.auth_jwt.oauth2_scheme),
+):
+    user, payload = await get_user_refresh_token(session=session, token=data_user)
+    access_token = create_access_token(user=user)
+    refresh_token = create_refresh_token(user=user)
+    return TokenBase(
+        access_token=access_token,
+        refresh_token=refresh_token,
+    )
