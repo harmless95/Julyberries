@@ -5,6 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.CRUD.user_crud import create_user, auth_user
 from api.dependecies.helpers import create_access_token, create_refresh_token
+from api.dependecies.user_token import get_user_token
+from core.config import setting
 from core.model import helper_db, User
 from core.schemas.token import TokenBase
 from core.schemas.user import UserCreate, UserRead
@@ -44,3 +46,17 @@ async def get_login(
         access_token=access_token,
         refresh_token=refresh_token,
     )
+
+
+@router.get("/me/")
+async def user_me(
+    session: Annotated[AsyncSession, Depends(helper_db.session_getter)],
+    payload: str = Depends(setting.auth_jwt.oauth2_scheme),
+):
+    user, payload_user = await get_user_token(session=session, token=payload)
+    logged_in_at = payload_user.get("logged_in_at")
+    return {
+        "email": user.email,
+        "name": user.name,
+        "logged_in_at": logged_in_at,
+    }
