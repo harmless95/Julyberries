@@ -14,41 +14,6 @@ from core.config import setting
 from core.model import User
 from utils.jwt_validate import validate_password, decode_jwt
 
-conn = HTTPBearer()
-oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="/auth/login/",
-)
-
-
-async def auth_user(
-    data_user: OAuth2PasswordRequestForm,
-    session: AsyncSession,
-) -> User:
-    """
-    Проверяем user
-    args:
-        data_user: OAuth2PasswordRequestForm - Получаем user из формы
-        session: AsyncSession — сессия базы данных
-    return:
-        user: User - Возвращаем модель User
-    """
-    error_ex = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="User not found or invalid credentials",
-    )
-    # Ищем пользователя в базе данных
-    user = await get_user_by_email(session=session, email_user=str(data_user.username))
-    if not user:
-        raise error_ex
-    # Сравниваем пароль
-    user_password = validate_password(
-        password=data_user.password,
-        hashed_password=user.hashed_password,
-    )
-    if not user_password:
-        raise error_ex
-    return user
-
 
 def validate_type_token(
     token_type: str,
