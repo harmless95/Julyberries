@@ -2,14 +2,14 @@ from typing import Annotated, List
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, status
 
-from catalogs_services.api.CRUD.crud_products import (
+from api.CRUD.crud_products import (
     get_all,
     get_product_id,
     create_product,
 )
-from catalogs_services.core.model import helper_db
-from catalogs_services.core.schemas.schema_product import ProductRead, ProductCreate
-from catalogs_services.core.model import Product
+from core.model import helper_db
+from core.schemas.schema_product import ProductRead, ProductCreate
+from core.model import Product
 
 router = APIRouter(prefix="/products", tags=["Product"])
 

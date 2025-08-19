@@ -4,11 +4,12 @@ from datetime import datetime, timezone
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Text, DECIMAL, Numeric, ForeignKey, TIMESTAMP
 
-from catalogs_services.core.model import Base
-from catalogs_services.core.model.mixins.id_int_primary_key import IdIntPrKey
+from core.model import Base
+
+from core.model.mixins.id_int_primary_key import IdIntPrKey
 
 if TYPE_CHECKING:
-    from catalogs_services.core.model import Category
+    from core.model import Category
 
 
 class Product(Base, IdIntPrKey):

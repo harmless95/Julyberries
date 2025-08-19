@@ -4,9 +4,9 @@ import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
-from catalogs_services.core.config import setting
-from catalogs_services.core.model import helper_db
-from catalogs_services.api import all_router
+from core.config import setting
+from core.model import helper_db
+from api import all_router
 
 logging.basicConfig(
     level=logging.INFO,
