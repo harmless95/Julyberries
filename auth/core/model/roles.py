@@ -30,6 +30,6 @@ class Role(Base, IdIntPrKey):
         if name_role not in setting.roles.name_roles:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail=f"Invalid name role: {name_role}, valid (user, manager, admin)",
+                detail=f"Invalid name role: {name_role!r}, valid {setting.roles.name_roles!r}",
             )
         return name_role
