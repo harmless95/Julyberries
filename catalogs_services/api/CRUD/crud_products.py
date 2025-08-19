@@ -1,18 +1,19 @@
 from typing import Sequence
 
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 from sqlalchemy import select
 from fastapi import HTTPException, status
 
-from catalogs_services.core.model import Product
-from catalogs_services.core.schemas.schema_product import ProductCreate
-from catalogs_services.core.model import Category
+from core.model import Product
+from core.schemas.schema_product import ProductCreate
+from core.model import Category
 
 
 async def get_all(
     session: AsyncSession,
 ) -> Sequence[Product]:
-    stmt = select(Product).order_by(Product.id)
+    stmt = select(Product).options(selectinload(Product.category)).order_by(Product.id)
     result = await session.scalars(stmt)
     products = result.all()
     return products
@@ -22,9 +23,18 @@ async def get_product_id(
     session: AsyncSession,
     product_id: int,
 ):
-    stmt = select(Product).where(Product.id == product_id)
+    stmt = (
+        select(Product)
+        .options(selectinload(Product.category))
+        .where(Product.id == product_id)
+    )
     result = await session.scalars(stmt)
     product = result.first()
+    if not product:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Invalid id: {product_id!r} not found",
+        )
     return product
 
 
@@ -50,7 +60,7 @@ async def create_product(
     if product:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f"Invalid {product} the product already exists",
+            detail=f"Invalid {data_product.name!r} the product already exists",
         )
     product = Product(
         name=data_product.name,
