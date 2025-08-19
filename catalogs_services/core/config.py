@@ -1,7 +1,6 @@
-from typing import Literal, ClassVar
+from typing import Literal
 from pathlib import Path
 
-from fastapi.security import OAuth2PasswordBearer, HTTPBearer
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import PostgresDsn, BaseModel
 
