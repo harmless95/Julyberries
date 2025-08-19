@@ -4,8 +4,9 @@ import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
-from core.config import setting
-from core.model import helper_db
+from catalogs_services.core.config import setting
+from catalogs_services.core.model import helper_db
+from catalogs_services.api import all_router
 
 logging.basicConfig(
     level=logging.INFO,
@@ -20,6 +21,7 @@ async def lifespan(app: FastAPI):
 
 
 app_catalog_main = FastAPI(lifespan=lifespan)
+app_catalog_main.include_router(router=all_router)
 
 
 @app_catalog_main.get("/")
