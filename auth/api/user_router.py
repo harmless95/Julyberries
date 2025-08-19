@@ -7,12 +7,14 @@ from api.CRUD.user_crud import create_user, auth_user
 from api.dependecies.helpers import create_access_token, create_refresh_token
 from api.dependecies.user_token import get_user_token, get_user_refresh_token
 from core.config import setting
-from core.model import helper_db, User
+from core.model import helper_db
 from core.schemas.token import TokenBase
 from core.schemas.user import UserCreate, UserRead
 
 router = APIRouter(
-    prefix="/auth", tags=["Auth"], dependencies=[Depends(setting.auth_jwt.http_bearer)]
+    prefix=setting.api.prefix,
+    tags=[setting.api.tags],
+    dependencies=[Depends(setting.auth_jwt.http_bearer)],
 )
 
 
