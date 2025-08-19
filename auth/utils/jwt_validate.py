@@ -59,9 +59,10 @@ def hash_password(
 
 def validate_password(
     password: str,
-    hashed_password: bytes,
+    hashed_password: str,
 ) -> bool:
+    password_hash = bytes.fromhex(hashed_password)
     return bcrypt.checkpw(
         password=password.encode(),
-        hashed_password=hashed_password,
+        hashed_password=password_hash,
     )
