@@ -47,26 +47,6 @@ class LoggingConfig(BaseModel):
     ] = "info"
     log_format: str = LOG_DEFAULT_FORMAT
 
-class AuthJWT(BaseModel):
-    private_key_path: Path = BASE_DIR / "certs" / "jwt-private.pem"
-    public_key_path: Path = BASE_DIR / "certs" / "jwt-public.pem"
-    algorithm: str = "RS256"
-    access_token_expire_minutes: int = 15
-    refresh_token_expire_days: int = 30
-
-    type_token: str = "Bearer"
-    token_type_field: str = "type"
-    access_token_type: str = "access"
-    refresh_token_type: str = "refresh"
-
-    http_bearer: ClassVar[HTTPBearer] = HTTPBearer(auto_error=False)
-    oauth2_scheme: ClassVar[OAuth2PasswordBearer] = OAuth2PasswordBearer(
-        tokenUrl="/auth/login/",
-    )
-
-class ConfigRoles(BaseModel):
-    name_roles: tuple[str] = ("user", "manager", "admin",)
-
 
 class Setting(BaseSettings):
     model_config = SettingsConfigDict(
@@ -82,8 +62,6 @@ class Setting(BaseSettings):
     run: Run = Run()
     api: PrefixConfig = PrefixConfig()
     log: LoggingConfig = LoggingConfig()
-    roles: ConfigRoles = ConfigRoles()
-    auth_jwt: AuthJWT = AuthJWT()
 
 
 setting = Setting()
