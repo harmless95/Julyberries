@@ -1,6 +1,7 @@
-from typing import Literal
+from typing import Literal, ClassVar
 from pathlib import Path
 
+from fastapi.security import OAuth2PasswordBearer, HTTPBearer
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import PostgresDsn, BaseModel
 
@@ -71,9 +72,16 @@ class AuthJWT(BaseModel):
     access_token_expire_minutes: int = 15
     refresh_token_expire_days: int = 30
 
+    type_token: str = "Bearer"
     token_type_field: str = "type"
     access_token_type: str = "access"
     refresh_token_type: str = "refresh"
+
+    http_bearer: ClassVar[HTTPBearer] = HTTPBearer(auto_error=False)
+    oauth2_scheme: ClassVar[OAuth2PasswordBearer] = OAuth2PasswordBearer(
+        tokenUrl="/auth/login/",
+    )
+
 
 class ConfigRoles(BaseModel):
     name_roles: tuple[str] = ("user", "manager", "admin",)
