@@ -5,7 +5,7 @@ __all__ = (
     "Category",
 )
 
-from catalogs_services.core.model.db_helper import helper_db
-from catalogs_services.core.model.base import Base
-from catalogs_services.core.model.products import Product
-from catalogs_services.core.model.categories import Category
+from core.model.db_helper import helper_db
+from core.model.base import Base
+from core.model.products import Product
+from core.model.categories import Category

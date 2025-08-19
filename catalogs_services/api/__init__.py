@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from catalogs_services.api.router_product import router as router_product
+from api.router_product import router as router_product
 
 all_router = APIRouter()
 
