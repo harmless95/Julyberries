@@ -2,17 +2,12 @@ from typing import Optional, Tuple
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import status, HTTPException
-from fastapi.security import (
-    OAuth2PasswordBearer,
-    HTTPBearer,
-    OAuth2PasswordRequestForm,
-)
 from jwt.exceptions import InvalidTokenError
 
 from api.CRUD.user_crud import get_user_by_email
 from core.config import setting
 from core.model import User
-from utils.jwt_validate import validate_password, decode_jwt
+from utils.jwt_validate import decode_jwt
 
 
 def validate_type_token(
