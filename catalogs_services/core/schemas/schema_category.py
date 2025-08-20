@@ -15,3 +15,9 @@ class CategoryRead(BaseModel):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class CategoryUpdate(BaseModel):
+    name: str | None = None
+
+    model_config = ConfigDict(from_attributes=True)

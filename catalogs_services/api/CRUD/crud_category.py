@@ -5,7 +5,7 @@ from sqlalchemy import select
 from fastapi import HTTPException, status
 
 from core.model import Category
-from core.schemas.schema_category import CategoryCreate
+from core.schemas.schema_category import CategoryCreate, CategoryUpdate
 
 
 async def all_categories(
@@ -47,6 +47,20 @@ async def create_category(
     category = Category(
         name=data_category.name,
     )
+    session.add(category)
+    await session.commit()
+    await session.refresh(category)
+    return category
+
+
+async def update_category(
+    session: AsyncSession,
+    data_update: CategoryUpdate,
+    category: Category,
+    partial: bool = False,
+) -> Category:
+    for name, value in data_update.model_dump(exclude_unset=partial).items():
+        setattr(category, name, value)
     session.add(category)
     await session.commit()
     await session.refresh(category)
