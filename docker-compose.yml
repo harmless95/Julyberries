@@ -4,7 +4,7 @@ services:
       dockerfile: Docker-build/auth/Dockerfile
       context: .
     environment:
-      APP_CONFIG__DB__URL: postgresql+asyncpg://userauth:qwe@pg:5432/julyberries
+      APP_CONFIG__DB__URL: postgresql+asyncpg://user:qwe@pg:5432/julyberries_auth
     ports:
       - "5353:8000"
     depends_on:
@@ -24,7 +24,7 @@ services:
       context: .
     working_dir: /catalogs_services
     environment:
-      APP_CONFIG__DB__URL: postgresql+asyncpg://userauth:qwe@pg:5432/julyberries
+      APP_CONFIG__DB__URL: postgresql+asyncpg://user:qwe@pg:5432/julyberries_catalog
     ports:
       - "5354:8000"
     depends_on:
@@ -42,12 +42,13 @@ services:
     image: postgres
     environment:
       POSTGRES_DB: julyberries
-      POSTGRES_USER: userauth
+      POSTGRES_USER: user
       POSTGRES_PASSWORD: qwe
       PGDATA: /var/lib/postgresql/data
     ports:
       - "5432:5432"
     volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - pgdata:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready" ]
