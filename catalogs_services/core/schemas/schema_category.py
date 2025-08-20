@@ -7,5 +7,8 @@ class CategoryCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class CategoryRead(CategoryCreate):
+class CategoryRead(BaseModel):
     id: int
+    name: str
+
+    model_config = ConfigDict(from_attributes=True)

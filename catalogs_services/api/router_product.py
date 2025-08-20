@@ -6,9 +6,10 @@ from api.CRUD.crud_products import (
     get_all,
     get_product_id,
     create_product,
+    update_product,
 )
 from core.model import helper_db
-from core.schemas.schema_product import ProductRead, ProductCreate
+from core.schemas.schema_product import ProductRead, ProductCreate, ProductUpdate
 from core.model import Product
 
 router = APIRouter(prefix="/products", tags=["Product"])
@@ -49,3 +50,37 @@ async def create_new_product(
 ) -> Product:
     product = await create_product(session=session, data_product=data_product)
     return product
+
+
+@router.put(
+    "/{product_id}/",
+    response_model=ProductRead,
+    status_code=status.HTTP_200_OK,
+)
+async def update_product_by_id(
+    data_update: ProductUpdate,
+    session: Annotated[AsyncSession, Depends(helper_db.session_getter)],
+    product: Product = Depends(get_product_by_id),
+) -> Product:
+    product_update = await update_product(
+        session=session,
+        data_update=data_update,
+        product=product,
+    )
+    return product_update
+
+
+@router.patch(
+    "/{product_id}/",
+    response_model=ProductRead,
+    status_code=status.HTTP_200_OK,
+)
+async def update_product_by_id_partial(
+    data_update: ProductUpdate,
+    session: Annotated[AsyncSession, Depends(helper_db.session_getter)],
+    product: Product = Depends(get_product_by_id),
+) -> Product:
+    product_update = await update_product(
+        session=session, data_update=data_update, product=product, partial=True
+    )
+    return product_update

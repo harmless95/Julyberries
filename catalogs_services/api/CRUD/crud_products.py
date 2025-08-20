@@ -6,7 +6,7 @@ from sqlalchemy import select
 from fastapi import HTTPException, status
 
 from core.model import Product
-from core.schemas.schema_product import ProductCreate
+from core.schemas.schema_product import ProductCreate, ProductUpdate
 from core.model import Category
 
 
@@ -71,4 +71,31 @@ async def create_product(
     session.add(product)
     await session.commit()
     await session.refresh(product, attribute_names=["category"])
+    return product
+
+
+async def update_product(
+    session: AsyncSession,
+    data_update: ProductUpdate,
+    product: Product,
+    partial: bool = False,
+) -> Product:
+    for name, value in data_update.model_dump(exclude_unset=partial).items():
+        if isinstance(value, dict) and name == "category":
+            category_name = value.get("name")
+            stmt = select(Category).where(Category.name == category_name)
+            result = await session.scalars(stmt)
+            category = result.first()
+            if category is None:
+                category = Category(
+                    name=category_name,
+                )
+                session.add(category)
+                await session.flush()
+            product.category = category
+        else:
+            setattr(product, name, value)
+
+    await session.commit()
+    await session.refresh(product)
     return product

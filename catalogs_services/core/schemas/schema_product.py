@@ -23,3 +23,11 @@ class ProductRead(BaseModel):
     category: Optional["CategoryRead"]
 
     model_config = ConfigDict(from_attributes=True, arbitrary_types_allowed=True)
+
+class ProductUpdate(BaseModel):
+    name: str | None = None
+    description: str | None = None
+    price: Decimal | None = None
+    category: Optional["CategoryCreate"] | None = None
+
+    model_config = ConfigDict(from_attributes=True, arbitrary_types_allowed=True)
