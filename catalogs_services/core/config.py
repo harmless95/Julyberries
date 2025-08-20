@@ -11,8 +11,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 class PrefixConfig(BaseModel):
-    prefix: str = "/auth"
-    tags: str = "Auth"
+    prefix: str = "/categories"
+    tags: str = "Category"
 
 
 class Run(BaseModel):

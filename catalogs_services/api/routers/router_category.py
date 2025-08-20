@@ -8,10 +8,14 @@ from api.CRUD.crud_category import (
     create_category,
     update_category,
 )
+from core.config import setting
 from core.model import helper_db, Category
 from core.schemas.schema_category import CategoryRead, CategoryCreate, CategoryUpdate
 
-router = APIRouter(prefix="/categories", tags=["Category"])
+router = APIRouter(
+    prefix=setting.api.prefix,
+    tags=[setting.api.tags],
+)
 
 
 @router.get(
