@@ -2,9 +2,9 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.CRUD.crud_category import all_categories, get_category
+from api.CRUD.crud_category import all_categories, get_category, create_category
 from core.model import helper_db, Category
-from core.schemas.schema_category import CategoryRead
+from core.schemas.schema_category import CategoryRead, CategoryCreate
 
 router = APIRouter(prefix="/categories", tags=["Category"])
 
@@ -33,5 +33,21 @@ async def get_category_by_id(
     category = await get_category(
         session=session,
         category_id=category_id,
+    )
+    return category
+
+
+@router.post(
+    "/",
+    response_model=CategoryRead,
+    status_code=status.HTTP_200_OK,
+)
+async def create_new_category(
+    session: Annotated[AsyncSession, Depends(helper_db.session_getter)],
+    data_category: CategoryCreate,
+) -> Category:
+    category = await create_category(
+        session=session,
+        data_category=data_category,
     )
     return category

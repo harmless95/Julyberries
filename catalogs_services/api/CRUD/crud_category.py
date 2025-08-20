@@ -5,6 +5,7 @@ from sqlalchemy import select
 from fastapi import HTTPException, status
 
 from core.model import Category
+from core.schemas.schema_category import CategoryCreate
 
 
 async def all_categories(
@@ -28,4 +29,25 @@ async def get_category(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Invalid id: {category_id} not found",
         )
+    return category
+
+
+async def create_category(
+    session: AsyncSession,
+    data_category: CategoryCreate,
+) -> Category:
+    stmt = select(Category).where(Category.name == data_category.name)
+    result = await session.scalars(stmt)
+    category = result.first()
+    if category:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Invalid {data_category.name!r} the category already exists",
+        )
+    category = Category(
+        name=data_category.name,
+    )
+    session.add(category)
+    await session.commit()
+    await session.refresh(category)
     return category
