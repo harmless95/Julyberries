@@ -74,3 +74,14 @@ async def update_category_by_id(
         category=category_id,
     )
     return category
+
+@router.delete(
+    "/{category_id}/",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def delete_category(
+    session: Annotated[AsyncSession, Depends(helper_db.session_getter)],
+    category_id: Category = Depends(get_category_by_id),
+) -> None:
+    await session.delete(category_id)
+    await session.commit()
