@@ -6,7 +6,7 @@ from fastapi import FastAPI
 
 from core.config import setting
 from core.model import helper_db
-from api import all_router
+from api.routers import all_router
 
 logging.basicConfig(
     level=logging.INFO,
