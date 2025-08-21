@@ -10,6 +10,10 @@ LOG_DEFAULT_FORMAT = "[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(leve
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+class ServiceProduct(BaseModel):
+    url: str = "http://localhost:5354/products/"
+
+
 class PrefixConfig(BaseModel):
     prefix: str = "/orders"
     tags: str = "Order"
@@ -61,6 +65,7 @@ class Setting(BaseSettings):
     run: Run = Run()
     api: PrefixConfig = PrefixConfig()
     log: LoggingConfig = LoggingConfig()
+    product: ServiceProduct = ServiceProduct()
 
 
 setting = Setting()

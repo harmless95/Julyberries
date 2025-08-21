@@ -2,8 +2,11 @@ import os
 import httpx
 from fastapi import HTTPException, status
 
-CAST_SERVICE_HOST_URL = "http://localhost:5354/products/"
-url = os.environ.get("CAST_SERVICE_HOST_URL") or CAST_SERVICE_HOST_URL
+from core.config import setting
+
+
+# CAST_SERVICE_HOST_URL = "http://localhost:5354/products/"
+# url = os.environ.get("CAST_SERVICE_HOST_URL") or CAST_SERVICE_HOST_URL
 
 
 async def query_result(url_data: str):
@@ -36,5 +39,5 @@ async def is_cast_present_all(url_service: str):
 
 
 if __name__ == "__main__":
-    is_cast_present_all(url_service=url)
-    is_cast_present(url_service=url, cast_id=3)
+    is_cast_present_all(url_service=setting.product.url)
+    is_cast_present(url_service=setting.product.url, cast_id=3)
