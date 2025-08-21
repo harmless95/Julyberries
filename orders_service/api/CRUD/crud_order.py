@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from fastapi import HTTPException, status
@@ -24,14 +26,16 @@ async def create_order(
     grocery_basket = {}
     products_all = await is_cast_present_all(url_service=setting.product.url)
     products = data_order.products_name
-    for product in products:
-        product_res = products_all.get(product)
+    for product_name in products:
+        product_res = next(
+            (item for item in products_all if item.get("name") == product_name), None
+        )
         if not product_res:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Invalid product: {product} not found",
+                detail=f"Invalid product: {product_name} not found",
             )
-        grocery_basket[product_res["name"]] = products["price"]
+        grocery_basket[product_res["name"]] = Decimal(product_res["price"])
     cart_price_sum = sum(grocery_basket.values())
     total_price = cart_price_sum + data_order.delivery_price
     order = Order(
