@@ -17,7 +17,7 @@ logging.basicConfig(
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     yield
-    helper_db.dispose()
+    await helper_db.dispose()
 
 
 app_catalog_main = FastAPI(lifespan=lifespan)
