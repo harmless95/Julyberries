@@ -7,6 +7,8 @@ from pydantic import BaseModel, ConfigDict
 class OrderCreate(BaseModel):
     user_id: int
     products_name: list[str]
+    delivery_price: int
+    status: str
 
     model_config = ConfigDict(from_attributes=True)
 
