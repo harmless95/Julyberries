@@ -3,6 +3,7 @@ services:
     build:
       dockerfile: Docker-build/auth/Dockerfile
       context: .
+    working_dir: /auth
     environment:
       APP_CONFIG__DB__URL: postgresql+asyncpg://user:qwe@pg:5432/julyberries_auth
     ports:
@@ -16,7 +17,7 @@ services:
           path: ./auth
           target: /app_auth
         - action: rebuild
-          path: poetry.lock
+          path: auth/poetry.lock
 
   catalogs_services:
     build:
@@ -36,7 +37,7 @@ services:
           path: ./catalogs_services
           target: /catalogs_services
         - action: rebuild
-          path: poetry.lock
+          path: catalogs_services/poetry.lock
 
   orders_service:
     build:
@@ -56,7 +57,7 @@ services:
           path: ./orders_service
           target: /orders_service
         - action: rebuild
-          path: poetry.lock
+          path: orders_service/poetry.lock
 
   pg:
     image: postgres
