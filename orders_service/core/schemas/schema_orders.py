@@ -6,12 +6,9 @@ from pydantic import BaseModel, ConfigDict
 
 class OrderCreate(BaseModel):
     user_id: int
-    total_price: Decimal
-    cart_price: Decimal
-    delivery_price: Decimal
-    status: str
+    products_name: list[str]
 
-    model_config = ConfigDict(from_attributes=True, arbitrary_types_allowed=True)
+    model_config = ConfigDict(from_attributes=True)
 
 
 class OrderRead(BaseModel):
