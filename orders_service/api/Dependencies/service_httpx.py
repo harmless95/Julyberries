@@ -1,12 +1,5 @@
-import os
 import httpx
 from fastapi import HTTPException, status
-
-from core.config import setting
-
-
-# CAST_SERVICE_HOST_URL = "http://localhost:5354/products/"
-# url = os.environ.get("CAST_SERVICE_HOST_URL") or CAST_SERVICE_HOST_URL
 
 
 async def query_result(url_data: str):
