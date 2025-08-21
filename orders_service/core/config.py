@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 class ServiceProduct(BaseModel):
-    url: str = "http://localhost:5354/products/"
+    url: str = "http://catalogs_services:8000/products/"
 
 
 class PrefixConfig(BaseModel):
