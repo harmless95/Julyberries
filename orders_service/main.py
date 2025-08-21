@@ -1,0 +1,37 @@
+#!/usr/bin/env python
+import uvicorn
+import logging
+from contextlib import asynccontextmanager
+from fastapi import FastAPI
+
+from core.config import setting
+from core.model import helper_db
+from api.routers import all_router
+
+logging.basicConfig(
+    level=logging.INFO,
+    format=setting.log.log_format,
+)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    yield
+    helper_db.dispose()
+
+
+app_catalog_main = FastAPI(lifespan=lifespan)
+app_catalog_main.include_router(router=all_router)
+
+
+@app_catalog_main.get("/")
+async def get_hello():
+    return {"message": "Hello, this is the order container."}
+
+
+if __name__ == "__main__":
+    uvicorn.run(
+        "main:app_catalog_main",
+        host=setting.run.host,
+        port=setting.run.port,
+    )
