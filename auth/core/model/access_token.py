@@ -3,7 +3,7 @@ from fastapi_users_db_sqlalchemy.access_token import (
     SQLAlchemyBaseAccessTokenTable,
     SQLAlchemyAccessTokenDatabase,
 )
-from sqlalchemy import Integer, ForeignKey
+from sqlalchemy import Integer, ForeignKey, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from core.model import Base
@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
 
 class AccessToken(Base, SQLAlchemyBaseAccessTokenTable[UserIdType]):
+    token: Mapped[str] = mapped_column(Text, primary_key=True)
     user_id: Mapped[UserIdType] = mapped_column(
         Integer, ForeignKey("users.id", ondelete="cascade"), nullable=False
     )

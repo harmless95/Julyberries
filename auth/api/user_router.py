@@ -7,7 +7,7 @@ from api.CRUD.user_crud import create_user, auth_user
 from api.dependecies.helpers import create_access_token, create_refresh_token
 from api.dependecies.user_token import get_user_token, get_user_refresh_token
 from core.config import setting
-from core.model import helper_db
+from core.model import helper_db, AccessToken
 from core.schemas.token import TokenBase
 from core.schemas.user import UserCreate, UserRead
 
@@ -44,7 +44,15 @@ async def get_login(
     data_user: OAuth2PasswordRequestForm = Depends(),
 ):
     user = await auth_user(session=session, data_user=data_user)
-    access_token = create_access_token(user=user)
+    access_token, logged_in_at = create_access_token(user=user)
+    token_save = AccessToken(
+        user_id=user.id,
+        token=access_token,
+        created_at=logged_in_at,
+    )
+    session.add(token_save)
+    await session.commit()
+    await session.refresh(token_save)
     refresh_token = create_refresh_token(user=user)
     return TokenBase(
         access_token=access_token,

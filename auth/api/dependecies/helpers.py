@@ -34,10 +34,11 @@ def create_access_token(user: User):
         "logged_in_at": now.isoformat(),
     }
     type_payload = setting.auth_jwt.access_token_type
-    return create_token(
+    access_token = create_token(
         type_payload=type_payload,
         payload=jwt_payload,
     )
+    return access_token, now
 
 
 def create_refresh_token(user: User):
