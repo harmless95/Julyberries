@@ -5,9 +5,9 @@ services:
       context: .
     working_dir: /auth
     environment:
-      APP_CONFIG__DB__URL: postgresql+asyncpg://user:qwe@pg:5432/julyberries_auth
+      APP_CONFIG__DB__URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pg:5432/${POSTGRES_DB_AUTH}
     ports:
-      - "5353:8000"
+      - "${APP_AUTH_PORT}:${CONTAINER_AUTH_PORT}"
     depends_on:
       pg:
         condition: service_healthy
@@ -25,9 +25,9 @@ services:
       context: .
     working_dir: /catalogs_services
     environment:
-      APP_CONFIG__DB__URL: postgresql+asyncpg://user:qwe@pg:5432/julyberries_catalog
+      APP_CONFIG__DB__URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pg:5432/${POSTGRES_DB_CATALOG}
     ports:
-      - "5354:8000"
+      - "${APP_CATALOG_PORT}:${CONTAINER_CATALOG_PORT}"
     depends_on:
       pg:
         condition: service_healthy
@@ -45,9 +45,9 @@ services:
       context: .
     working_dir: /orders_service
     environment:
-      APP_CONFIG__DB__URL: postgresql+asyncpg://user:qwe@pg:5432/julyberries_order
+      APP_CONFIG__DB__URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pg:5432/${POSTGRES_DB_ORDER}
     ports:
-      - "5355:8000"
+      - "${APP_ORDER_PORT}:${CONTAINER_ORDER_PORT}"
     depends_on:
       pg:
         condition: service_healthy
@@ -62,9 +62,9 @@ services:
   pg:
     image: postgres
     environment:
-      POSTGRES_DB: julyberries
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: qwe
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       PGDATA: /var/lib/postgresql/data
     ports:
       - "5432:5432"
@@ -81,9 +81,9 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.org
-      PGADMIN_DEFAULT_PASSWORD: admin
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_CONFIG_SERVER_MODE: ${PGADMIN_CONFIG_SERVER_MODE}
     ports:
       - "5050:80"
     depends_on:
