@@ -30,6 +30,7 @@ async def get_user_by_email(
 async def create_user(
     session: AsyncSession,
     data_user: UserCreate,
+    role_user: str = "user",
 ) -> User:
     """
     Создаем user
@@ -51,7 +52,7 @@ async def create_user(
     # Преобразуем пароль из байтов в строку для хранения в базе данных
     hex_hash = hash_bytes.hex()
 
-    stmt_role = select(Role).where(Role.name == "user")
+    stmt_role = select(Role).where(Role.name == role_user)
     result_role = await session.scalars(stmt_role)
     role = result_role.first()
 
