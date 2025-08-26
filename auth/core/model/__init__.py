@@ -5,7 +5,7 @@ __all__ = (
     "AccessToken",
     "Permission",
     "Role",
-    "roles_permissions_table",
+    "RolesPermission",
 )
 
 from .db_helper import helper_db
@@ -14,4 +14,4 @@ from .user import User
 from .access_token import AccessToken
 from .permissions import Permission
 from .roles import Role
-from .roles_permissions import roles_permissions_table
+from .roles_permissions import RolesPermission

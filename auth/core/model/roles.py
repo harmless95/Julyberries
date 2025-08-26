@@ -5,24 +5,21 @@ from sqlalchemy import String, Text
 from fastapi import HTTPException, status
 
 from core.model import Base
-from core.model.mixins.id_int_primary_key import IdIntPrKey
+from core.model.mixins.id_int_primary_key import IdPrKey
 from core.config import setting
-from .roles_permissions import roles_permissions_table
 
 if TYPE_CHECKING:
     from .user import User
-    from .permissions import Permission
+    from .roles_permissions import RolesPermission
 
 
-class Role(Base, IdIntPrKey):
+class Role(IdPrKey, Base):
     name: Mapped[str] = mapped_column(String(50), unique=True)
     description: Mapped[str] = mapped_column(Text)
 
     users: Mapped[list["User"]] = relationship("User", back_populates="role")
-    permissions: Mapped[list["Permission"]] = relationship(
-        "Permission",
-        secondary=roles_permissions_table,
-        back_populates="roles",
+    permissions_helper: Mapped[list["RolesPermission"]] = relationship(
+        back_populates="role_r"
     )
 
     @validates("name")
