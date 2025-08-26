@@ -5,7 +5,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.CRUD.user_crud import create_user, auth_user
 from api.dependecies.helpers import create_access_token, create_refresh_token
-from api.dependecies.user_token import get_user_token, get_user_refresh_token
+from api.dependecies.user_token import (
+    get_user_token,
+    get_user_refresh_token,
+    validation_user,
+)
 from core.config import setting
 from core.model import helper_db, AccessToken
 from core.schemas.token import TokenBase
@@ -90,3 +94,23 @@ async def refresh_jwt_token(
         access_token=access_token,
         refresh_token=refresh_token,
     )
+
+
+@router.post(
+    "/personal",
+    response_model=UserRead,
+    status_code=status.HTTP_201_CREATED,
+)
+async def appoint_staff(
+    session: Annotated[AsyncSession, Depends(helper_db.session_getter)],
+    data_personal: UserCreate,
+    role: str,
+    data_user: str = Depends(setting.auth_jwt.oauth2_scheme),
+):
+    user = await validation_user(
+        session=session,
+        data_personal=data_personal,
+        role=role,
+        token=data_user,
+    )
+    return user
