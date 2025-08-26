@@ -1,10 +1,9 @@
 from datetime import datetime
-from typing import Optional, TYPE_CHECKING
+from typing import Optional
 from pydantic import EmailStr, BaseModel, ConfigDict
 
 
 from .role import RoleRead
-from .role import RoleCreate
 from ..types.user_id import UserIdType
 
 
