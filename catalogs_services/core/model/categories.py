@@ -5,13 +5,13 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, TIMESTAMP
 
 from core.model import Base
-from core.model.mixins.id_int_primary_key import IdIntPrKey
+from core.model.mixins.id_int_primary_key import IdPrKey
 
 if TYPE_CHECKING:
     from core.model import Product
 
 
-class Category(Base, IdIntPrKey):
+class Category(Base, IdPrKey):
     name: Mapped[str] = mapped_column(String(150))
     created_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True),

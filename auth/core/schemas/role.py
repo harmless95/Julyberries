@@ -1,5 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 
+from core.types.user_id import UserIdType
 
 class RoleCreate(BaseModel):
     name: str
@@ -9,7 +10,7 @@ class RoleCreate(BaseModel):
 
 
 class RoleRead(BaseModel):
-    id: int
+    id: UserIdType
     name: str
     description: str
 

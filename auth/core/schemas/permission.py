@@ -1,5 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 
+from core.types.user_id import UserIdType
+
 
 class PermissionCreate(BaseModel):
     code: str
@@ -9,7 +11,7 @@ class PermissionCreate(BaseModel):
 
 
 class PermissionRead(PermissionCreate):
-    id: int
+    id: UserIdType
 
 
 class PermissionUpdate(BaseModel):

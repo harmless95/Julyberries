@@ -6,13 +6,13 @@ from sqlalchemy import String, Text, DECIMAL, Numeric, ForeignKey, TIMESTAMP
 
 from core.model import Base
 
-from core.model.mixins.id_int_primary_key import IdIntPrKey
+from core.model.mixins.id_int_primary_key import IdPrKey
 
 if TYPE_CHECKING:
     from core.model import Category
 
 
-class Product(Base, IdIntPrKey):
+class Product(Base, IdPrKey):
     name: Mapped[str] = mapped_column(String(150), unique=True)
     description: Mapped[str] = mapped_column(Text)
     price: Mapped[DECIMAL] = mapped_column(Numeric(10, 2))

@@ -7,7 +7,7 @@ from sqlalchemy import String, ForeignKey
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 
 from core.model import Base
-from .mixins.id_int_primary_key import IdIntPrKey
+from .mixins.id_int_primary_key import IdPrKey
 
 
 if TYPE_CHECKING:
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from .roles import Role
 
 
-class User(Base, IdIntPrKey):
+class User(IdPrKey, Base):
     email: Mapped[str] = mapped_column(
         String(length=320),
         unique=True,
