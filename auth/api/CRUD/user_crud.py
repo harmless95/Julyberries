@@ -51,17 +51,17 @@ async def create_user(
     # Преобразуем пароль из байтов в строку для хранения в базе данных
     hex_hash = hash_bytes.hex()
 
-    stmt_role = select(Role).where(Role.name == data_user.role.name)
+    stmt_role = select(Role).where(Role.name == "user")
     result_role = await session.scalars(stmt_role)
     role = result_role.first()
-    if not role:
-        role = Role(
-            name=data_user.role.name,
-            description=data_user.role.description,
-        )
-        session.add(role)
-        await session.commit()
-        await session.refresh(role)
+    # if not role:
+    #     role = Role(
+    #         name=data_user.role.name,
+    #         description=data_user.role.description,
+    #     )
+    #     session.add(role)
+    #     await session.commit()
+    #     await session.refresh(role)
 
     # Создаем пользователя
     user = User(

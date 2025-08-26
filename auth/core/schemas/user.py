@@ -12,7 +12,6 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
     name: str
-    role: Optional["RoleCreate"]
 
     model_config = ConfigDict(from_attributes=True)
 
