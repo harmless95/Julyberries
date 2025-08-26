@@ -1,12 +1,15 @@
 from typing import Optional, Tuple
 
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
+from sqlalchemy import select
 from fastapi import status, HTTPException
 from jwt.exceptions import InvalidTokenError
 
-from api.CRUD.user_crud import get_user_by_email
+from api.CRUD.user_crud import get_user_by_email, create_user
 from core.config import setting
 from core.model import User
+from core.schemas.user import UserCreate
 from utils.jwt_validate import decode_jwt
 
 
@@ -129,3 +132,45 @@ async def get_user_refresh_token(
     return await get_user_payload_syb(
         session=session, token=token, token_type=refresh_type
     )
+
+
+async def validation_user(
+    session: AsyncSession,
+    token: str,
+    data_personal: UserCreate,
+    role: str,
+) -> User:
+    payload = await validate_payload(token=token)
+    user_email = payload.get("sub")
+
+    # Проверяем на валидность role
+    if role not in setting.roles.name_roles:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"You have specified an invalid role: {role}. You need to: {setting.roles.name_roles}",
+        )
+
+    # Ищем пользователя по почте из токена
+    stmt = select(User).options(selectinload(User.role)).where(User.email == user_email)
+    result_user = await session.scalars(stmt)
+    user = result_user.first()
+    # Проверяем у него роль
+    await session.refresh(user)
+    user_role_name = user.role.name
+    if user_role_name not in setting.roles.personnel_recruitment_rights:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"You have specified an invalid role: {user_role_name}. You need to: {setting.roles.personnel_recruitment_rights}",
+        )
+
+    if role == "admin" and user_role_name != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"You do not have sufficient rights to grant this role: {role}",
+        )
+    user = await create_user(
+        session=session,
+        data_user=data_personal,
+        role_user=role,
+    )
+    return user
