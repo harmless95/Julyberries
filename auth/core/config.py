@@ -66,6 +66,7 @@ class AuthJWT(BaseModel):
 
 class ConfigRoles(BaseModel):
     name_roles: tuple[str] = ("user", "manager", "admin",)
+    personnel_recruitment_rights: tuple[str] = ("manager", "admin",)
 
 
 class Setting(BaseSettings):
