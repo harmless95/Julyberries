@@ -84,7 +84,7 @@ async def refresh_jwt_token(
     data_user: str = Depends(setting.auth_jwt.oauth2_scheme),
 ):
     user, payload = await get_user_refresh_token(session=session, token=data_user)
-    access_token = create_access_token(user=user)
+    access_token, logged_in_at = create_access_token(user=user)
     refresh_token = create_refresh_token(user=user)
     return TokenBase(
         access_token=access_token,
