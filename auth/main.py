@@ -4,7 +4,7 @@ import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
-from api.user_router import router as user_router
+from api.routers import all_routers
 from core.config import setting
 from core.model import helper_db
 
@@ -21,7 +21,7 @@ async def lifespan(app: FastAPI):
 
 
 app_main = FastAPI(lifespan=lifespan)
-app_main.include_router(router=user_router)
+app_main.include_router(router=all_routers)
 
 
 @app_main.get("/")
