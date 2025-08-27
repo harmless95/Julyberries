@@ -1,15 +1,17 @@
 from typing import TYPE_CHECKING
+from uuid import UUID
+
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey, DOUBLE_PRECISION, UniqueConstraint
 
 from .base import Base
-from .mixins.id_int_primary_key import IdIntPrKey
+from .mixins.id_int_primary_key import IdPrKey
 
 if TYPE_CHECKING:
     from .orders import Order
 
 
-class OrderItem(Base, IdIntPrKey):
+class OrderItem(Base, IdPrKey):
     # fmt: off
     __table_args__ = (
         UniqueConstraint(
@@ -19,8 +21,8 @@ class OrderItem(Base, IdIntPrKey):
     ),
     )
     # fmt: on
-    order_id: Mapped[int] = mapped_column(ForeignKey("orders.id"))
-    product_id: Mapped[int] = mapped_column()
+    order_id: Mapped[UUID] = mapped_column(ForeignKey("orders.id"))
+    product_id: Mapped[UUID] = mapped_column()
     quantity: Mapped[int] = mapped_column()
     unit_price: Mapped[float] = mapped_column(DOUBLE_PRECISION)
 

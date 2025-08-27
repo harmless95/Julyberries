@@ -1,11 +1,12 @@
 from datetime import datetime
 from decimal import Decimal
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
 
 
 class OrderCreate(BaseModel):
-    user_id: int
+    user_id: UUID
     products_name: list[str]
     delivery_price: int
     status: str
@@ -14,8 +15,8 @@ class OrderCreate(BaseModel):
 
 
 class OrderRead(BaseModel):
-    id: int
-    user_id: int
+    id: UUID
+    user_id: UUID
     total_price: Decimal
     cart_price: Decimal
     delivery_price: Decimal
