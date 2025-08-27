@@ -1,4 +1,5 @@
 from typing import Sequence
+from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -19,7 +20,7 @@ async def all_categories(
 
 async def get_category(
     session: AsyncSession,
-    category_id: int,
+    category_id: UUID,
 ) -> Category:
     stmt = select(Category).where(Category.id == category_id)
     result = await session.scalars(stmt)

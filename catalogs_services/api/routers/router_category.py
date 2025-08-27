@@ -1,4 +1,6 @@
 from typing import Annotated
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -37,7 +39,7 @@ async def get_all_categories(
 )
 async def get_category_by_id(
     session: Annotated[AsyncSession, Depends(helper_db.session_getter)],
-    category_id: int,
+    category_id: UUID,
 ) -> Category:
     category = await get_category(
         session=session,

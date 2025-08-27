@@ -1,4 +1,5 @@
 from typing import Sequence
+from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -21,7 +22,7 @@ async def get_all(
 
 async def get_product_id(
     session: AsyncSession,
-    product_id: int,
+    product_id: UUID,
 ):
     stmt = (
         select(Product)

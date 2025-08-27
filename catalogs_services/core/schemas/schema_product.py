@@ -1,3 +1,4 @@
+from uuid import UUID
 from typing import Optional
 from decimal import Decimal
 from pydantic import BaseModel, ConfigDict
@@ -16,13 +17,14 @@ class ProductCreate(BaseModel):
 
 
 class ProductRead(BaseModel):
-    id: int
+    id: UUID
     name: str
     description: str
     price: Decimal
     category: Optional["CategoryRead"]
 
     model_config = ConfigDict(from_attributes=True, arbitrary_types_allowed=True)
+
 
 class ProductUpdate(BaseModel):
     name: str | None = None

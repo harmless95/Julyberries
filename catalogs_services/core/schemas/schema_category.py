@@ -1,4 +1,5 @@
 from datetime import datetime
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
 
@@ -10,7 +11,7 @@ class CategoryCreate(BaseModel):
 
 
 class CategoryRead(BaseModel):
-    id: int
+    id: UUID
     name: str
     created_at: datetime
 

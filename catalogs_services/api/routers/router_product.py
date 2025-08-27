@@ -1,4 +1,6 @@
 from typing import Annotated, List
+from uuid import UUID
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, status
 
@@ -34,7 +36,7 @@ async def get_all_products(
 )
 async def get_product_by_id(
     session: Annotated[AsyncSession, Depends(helper_db.session_getter)],
-    product_id: int,
+    product_id: UUID,
 ) -> ProductRead:
     return await get_product_id(session=session, product_id=product_id)
 
