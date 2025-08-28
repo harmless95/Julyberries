@@ -3,7 +3,9 @@ import uvicorn
 import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+import aioredis
 
+from api.dependecies import redis_token
 from api.routers import all_routers
 from core.config import setting
 from core.model import helper_db
@@ -16,8 +18,12 @@ logging.basicConfig(
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    yield
-    await helper_db.dispose()
+    await redis_token.init_redis(setting.redis.url)
+    try:
+        yield
+    finally:
+        await redis_token.close_redis()
+        await helper_db.dispose()
 
 
 app_main = FastAPI(lifespan=lifespan)
