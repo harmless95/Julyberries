@@ -3,12 +3,12 @@ import uvicorn
 import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-import aioredis
+from redis import asyncio as aioredis
 
-from api.dependecies import redis_token
 from api.routers import all_routers
 from core.config import setting
 from core.model import helper_db
+from api.dependecies.redis_client import redis
 
 logging.basicConfig(
     level=logging.INFO,
@@ -18,11 +18,12 @@ logging.basicConfig(
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await redis_token.init_redis(setting.redis.url)
+    global redis
+    redis = aioredis.from_url(setting.redis.url)
     try:
         yield
     finally:
-        await redis_token.close_redis()
+        await redis.close()
         await helper_db.dispose()
 
 

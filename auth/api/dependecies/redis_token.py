@@ -1,21 +1,7 @@
 from datetime import timedelta
 
 from core.config import setting
-
-redis = None
-
-
-async def init_redis(redis_url: str):
-    global redis
-    import aioredis
-
-    redis = aioredis.from_url(redis_url)
-
-
-async def close_redis():
-    global redis
-    if redis:
-        await redis.close()
+from .redis_client import redis
 
 
 # Добавляем текущий access токен в blacklist на время его жизни или на фиксированный срок
@@ -35,9 +21,7 @@ async def is_blacklisted(token: str):
 # Проверяем есть ли такой refresh token в Redis (валидность)
 async def get_stored_refresh_token(username: str):
     token = await redis.get(f"refresh:{username}")
-    if token:
-        return token.decode()
-    return None
+    return token
 
 
 # Создаем refresh token и сохраняем его в Redis
