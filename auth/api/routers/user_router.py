@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,6 +10,8 @@ from api.dependecies.user_token import (
     get_user_refresh_token,
     validation_user,
 )
+
+from api.dependecies.redis_token import get_stored_refresh_token, store_refresh_token
 from core.config import setting
 from core.model import helper_db, AccessToken
 from core.schemas.token import TokenBase
@@ -58,6 +60,7 @@ async def get_login(
     await session.commit()
     await session.refresh(token_save)
     refresh_token = create_refresh_token(user=user)
+    await store_refresh_token(user.username, refresh_token)
     return TokenBase(
         access_token=access_token,
         refresh_token=refresh_token,
@@ -88,8 +91,17 @@ async def refresh_jwt_token(
     data_user: str = Depends(setting.auth_jwt.oauth2_scheme),
 ):
     user, payload = await get_user_refresh_token(session=session, token=data_user)
+
+    username = payload.get("sub")
+    stored_refresh = await get_stored_refresh_token(username)
+    if stored_refresh != data_user:
+        raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
+
     access_token, logged_in_at = create_access_token(user=user)
     refresh_token = create_refresh_token(user=user)
+
+    await store_refresh_token(username, refresh_token)
+
     return TokenBase(
         access_token=access_token,
         refresh_token=refresh_token,
