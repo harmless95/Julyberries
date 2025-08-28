@@ -9,6 +9,7 @@ from api.routers import all_routers
 from core.config import setting
 from core.model import helper_db
 from api.dependecies.redis_client import redis
+from action import main_permission, main_superuser
 
 logging.basicConfig(
     level=logging.INFO,
@@ -20,6 +21,8 @@ logging.basicConfig(
 async def lifespan(app: FastAPI):
     global redis
     redis = aioredis.from_url(setting.redis.url)
+    await main_permission()
+    await main_superuser()
     try:
         yield
     finally:
