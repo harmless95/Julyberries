@@ -60,7 +60,7 @@ async def get_login(
     await session.commit()
     await session.refresh(token_save)
     refresh_token = create_refresh_token(user=user)
-    await store_refresh_token(user.username, refresh_token)
+    await store_refresh_token(user.email, refresh_token)
     return TokenBase(
         access_token=access_token,
         refresh_token=refresh_token,
