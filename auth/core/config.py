@@ -54,6 +54,8 @@ class AuthJWT(BaseModel):
     access_token_expire_minutes: int = 15
     refresh_token_expire_days: int = 30
 
+    blacklist_token_expire_days: int = 7
+
     type_token: str = "Bearer"
     token_type_field: str = "type"
     access_token_type: str = "access"
@@ -68,6 +70,8 @@ class ConfigRoles(BaseModel):
     name_roles: tuple[str] = ("user", "manager", "admin",)
     personnel_recruitment_rights: tuple[str] = ("manager", "admin",)
 
+class RedisConfig(BaseSettings):
+    url: str = "redis://localhost"
 
 class Setting(BaseSettings):
     model_config = SettingsConfigDict(
@@ -81,6 +85,7 @@ class Setting(BaseSettings):
     )
     db: DataBaseConfig
     run: Run = Run()
+    redis: RedisConfig = RedisConfig()
     api: PrefixConfig = PrefixConfig()
     log: LoggingConfig = LoggingConfig()
     roles: ConfigRoles = ConfigRoles()
