@@ -21,8 +21,8 @@ logging.basicConfig(
 async def lifespan(app: FastAPI):
     global redis
     redis = aioredis.from_url(setting.redis.url)
-    await main_permission()
-    await main_superuser()
+    # await main_permission()
+    # await main_superuser()
     try:
         yield
     finally:
