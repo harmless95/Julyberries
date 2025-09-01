@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, status, HTTPException, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -109,7 +109,7 @@ async def refresh_jwt_token(
 
 
 @router.post(
-    "/personal",
+    "/personal/",
     response_model=UserRead,
     status_code=status.HTTP_201_CREATED,
 )
@@ -126,3 +126,20 @@ async def appoint_staff(
         token=data_user,
     )
     return user
+
+
+@router.post("/verify_token/")
+async def verify_token(
+    session: Annotated[AsyncSession, Depends(helper_db.session_getter)],
+    request: Request,
+):
+    data = await request.json()
+    token = data.get("token")
+    # Тут логика проверки токена (например, JWT decode)
+    user, payload_user = await get_user_token(session=session, token=token)
+    logged_in_at = payload_user.get("logged_in_at")
+    return {
+        "email": user.email,
+        "name": user.name,
+        "logged_in_at": logged_in_at,
+    }
