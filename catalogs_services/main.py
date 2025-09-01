@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from core.config import setting
 from core.model import helper_db
 from api.routers import all_router
+from core.authoriztion.middleware_auth import JWTAuthMiddleware
 
 logging.basicConfig(
     level=logging.INFO,
@@ -22,6 +23,8 @@ async def lifespan(app: FastAPI):
 
 app_catalog_main = FastAPI(lifespan=lifespan)
 app_catalog_main.include_router(router=all_router)
+
+app_catalog_main.add_middleware(JWTAuthMiddleware)
 
 
 @app_catalog_main.get("/")
