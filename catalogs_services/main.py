@@ -2,12 +2,12 @@
 import uvicorn
 import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 
 from core.config import setting
 from core.model import helper_db
 from api.routers import all_router
-from core.authoriztion.middleware_auth import JWTAuthMiddleware
+from core.authoriztion.middleware_auth import AuthMiddleware
 
 logging.basicConfig(
     level=logging.INFO,
@@ -24,7 +24,12 @@ async def lifespan(app: FastAPI):
 app_catalog_main = FastAPI(lifespan=lifespan)
 app_catalog_main.include_router(router=all_router)
 
-app_catalog_main.add_middleware(JWTAuthMiddleware)
+app_catalog_main.add_middleware(AuthMiddleware)
+
+
+@app_catalog_main.get("/protected")
+async def protected_endpoint(request: Request):
+    return {"message": f"Привет, {request.state.user}. Доступ разрешен."}
 
 
 @app_catalog_main.get("/")

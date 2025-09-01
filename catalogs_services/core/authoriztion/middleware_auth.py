@@ -1,35 +1,26 @@
+from fastapi import Request, HTTPException, status
 from starlette.middleware.base import BaseHTTPMiddleware
-from fastapi.responses import JSONResponse
-from fastapi import Request
-import jwt
+import httpx
 
-from core.config import setting
-
-
-class JWTAuthMiddleware(BaseHTTPMiddleware):
+class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        unprotected_paths = ["/login", "/signup", "/open"]
-        if request.url.path in unprotected_paths:
-            return await call_next(request)
-
         auth_header = request.headers.get("Authorization")
         if not auth_header or not auth_header.startswith("Bearer "):
-            return JSONResponse(
-                status_code=401, content={"detail": "Отсутствует токен авторизации"}
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Unauthorized",
             )
         token = auth_header.split(" ")[1]
-        try:
-            payload = jwt.decode(
-                token,
-                setting.auth_jwt.private_key_path,
-                algorithms=[setting.auth_jwt.algorithm],
+        async with httpx.AsyncClient(timeout=10) as client:
+            response = await client.post(
+                "http://app_auth:8000/auth/verify_token/", json={"token": token}
             )
-
-            request.state.user = payload.get("sub")
-        except jwt.ExpiredSignatureError:
-            return JSONResponse(status_code=401, content={"detail": "Токен истек"})
-        except jwt.InvalidTokenError:
-            return JSONResponse(status_code=401, content={"detail": "Неверный токен"})
-
+            if response.status_code != 200:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid token",
+                )
+            user_info = response.json()
+        request.state.user = user_info
         response = await call_next(request)
         return response
