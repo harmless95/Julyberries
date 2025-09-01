@@ -46,6 +46,10 @@ class LoggingConfig(BaseModel):
     ] = "info"
     log_format: str = LOG_DEFAULT_FORMAT
 
+class AuthJWT(BaseModel):
+    private_key_path: Path = BASE_DIR / "certs" / "jwt-private.pem"
+    public_key_path: Path = BASE_DIR / "certs" / "jwt-public.pem"
+    algorithm: str = "RS256"
 
 class Setting(BaseSettings):
     model_config = SettingsConfigDict(
@@ -61,6 +65,7 @@ class Setting(BaseSettings):
     run: Run = Run()
     api: PrefixConfig = PrefixConfig()
     log: LoggingConfig = LoggingConfig()
+    auth_jwt: AuthJWT = AuthJWT()
 
 
 setting = Setting()
