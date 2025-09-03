@@ -1,8 +1,15 @@
 #!/usr/bin/env python
+import asyncio
+import time
+
 import uvicorn
 import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
+from redis import asyncio as aioredis
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
+from fastapi_cache.decorator import cache
 
 from core.config import setting
 from core.model import helper_db
@@ -14,9 +21,13 @@ logging.basicConfig(
     format=setting.log.log_format,
 )
 
+log = logging.getLogger(__name__)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    redis = aioredis.from_url(setting.redis_conf.url)
+    FastAPICache.init(RedisBackend(redis=redis), prefix="fastapi-cache")
     yield
     await helper_db.dispose()
 
