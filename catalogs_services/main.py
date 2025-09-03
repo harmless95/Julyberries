@@ -27,7 +27,7 @@ app_catalog_main.include_router(router=all_router)
 app_catalog_main.add_middleware(AuthMiddleware)
 
 
-@app_catalog_main.get("/protected")
+@app_catalog_main.get("/protected_catalog/")
 async def protected_endpoint(request: Request):
     return {"message": f"Привет, {request.state.user}. Доступ разрешен."}
 
