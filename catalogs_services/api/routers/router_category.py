@@ -3,6 +3,8 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi_cache.decorator import cache
+from fastapi_cache import FastAPICache
 
 from api.CRUD.crud_category import (
     all_categories,
@@ -13,6 +15,8 @@ from api.CRUD.crud_category import (
 from core.config import setting
 from core.model import helper_db, Category
 from core.schemas.schema_category import CategoryRead, CategoryCreate, CategoryUpdate
+
+exp_sec = setting.redis_conf.expire_second
 
 router = APIRouter(
     prefix=setting.api.prefix,
@@ -25,6 +29,7 @@ router = APIRouter(
     response_model=list[CategoryRead],
     status_code=status.HTTP_200_OK,
 )
+@cache(expire=exp_sec)
 async def get_all_categories(
     session: Annotated[AsyncSession, Depends(helper_db.session_getter)],
 ) -> list[CategoryRead]:
@@ -37,6 +42,7 @@ async def get_all_categories(
     response_model=CategoryRead,
     status_code=status.HTTP_200_OK,
 )
+@cache(expire=exp_sec)
 async def get_category_by_id(
     session: Annotated[AsyncSession, Depends(helper_db.session_getter)],
     category_id: UUID,
@@ -61,6 +67,7 @@ async def create_new_category(
         session=session,
         data_category=data_category,
     )
+    await FastAPICache.clear()
     return category
 
 
@@ -79,6 +86,7 @@ async def update_category_by_id(
         data_update=data_update,
         category=category_id,
     )
+    await FastAPICache.clear()
     return category
 
 
@@ -92,3 +100,4 @@ async def delete_category(
 ) -> None:
     await session.delete(category_id)
     await session.commit()
+    await FastAPICache.clear()
