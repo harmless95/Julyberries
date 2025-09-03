@@ -46,10 +46,17 @@ class LoggingConfig(BaseModel):
     ] = "info"
     log_format: str = LOG_DEFAULT_FORMAT
 
+
 class AuthJWT(BaseModel):
     private_key_path: Path = BASE_DIR / "certs" / "jwt-private.pem"
     public_key_path: Path = BASE_DIR / "certs" / "jwt-public.pem"
     algorithm: str = "RS256"
+
+
+class ConfigRedis(BaseModel):
+    url: str
+    expire_second: int = 3600
+
 
 class Setting(BaseSettings):
     model_config = SettingsConfigDict(
@@ -62,6 +69,7 @@ class Setting(BaseSettings):
         env_prefix="APP_CONFIG__",
     )
     db: DataBaseConfig
+    redis_conf: ConfigRedis
     run: Run = Run()
     api: PrefixConfig = PrefixConfig()
     log: LoggingConfig = LoggingConfig()
