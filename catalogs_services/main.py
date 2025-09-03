@@ -39,8 +39,16 @@ app_catalog_main.add_middleware(AuthMiddleware)
 
 
 @app_catalog_main.get("/protected_catalog/")
+@cache(expire=setting.redis_conf.expire_second)
 async def protected_endpoint(request: Request):
-    return {"message": f"Привет, {request.state.user}. Доступ разрешен."}
+    start = time.time()
+    await asyncio.sleep(5)
+    elapsed = time.time() - start
+    log.warning("Время работы: %s", elapsed)
+    return {
+        "message": f"Привет, {request.state.user}. Доступ разрешен.",
+        "Время работы": elapsed,
+    }
 
 
 @app_catalog_main.get("/")
