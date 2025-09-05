@@ -10,6 +10,7 @@ from redis import asyncio as aioredis
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from fastapi_cache.decorator import cache
+from aiokafka import AIOKafkaProducer
 
 from core.config import setting
 from core.model import helper_db
@@ -28,8 +29,15 @@ log = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     redis = aioredis.from_url(setting.redis_conf.url)
     FastAPICache.init(RedisBackend(redis=redis), prefix="fastapi-cache")
+
+    producer = AIOKafkaProducer(
+        bootstrap_servers="kafka1:9090",
+        client_id="my-fastapi-app",
+    )
+    await producer.start()
     yield
     await helper_db.dispose()
+    await producer.stop()
 
 
 app_catalog_main = FastAPI(lifespan=lifespan)
