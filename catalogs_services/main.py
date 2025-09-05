@@ -35,6 +35,7 @@ async def lifespan(app: FastAPI):
         client_id="my-fastapi-app",
     )
     await producer.start()
+    app.state.producer = producer
     yield
     await helper_db.dispose()
     await producer.stop()
@@ -43,7 +44,7 @@ async def lifespan(app: FastAPI):
 app_catalog_main = FastAPI(lifespan=lifespan)
 app_catalog_main.include_router(router=all_router)
 
-app_catalog_main.add_middleware(AuthMiddleware)
+# app_catalog_main.add_middleware(AuthMiddleware)
 
 
 @app_catalog_main.get("/protected_catalog/")
