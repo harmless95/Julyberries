@@ -70,8 +70,8 @@ class ConfigRoles(BaseModel):
     name_roles: tuple[str] = ("user", "manager", "admin",)
     personnel_recruitment_rights: tuple[str] = ("manager", "admin",)
 
-class RedisConfig(BaseSettings):
-    url: str = "redis://localhost"
+class RedisConfig(BaseModel):
+    url: str
 
 class Setting(BaseSettings):
     model_config = SettingsConfigDict(
@@ -85,7 +85,7 @@ class Setting(BaseSettings):
     )
     db: DataBaseConfig
     run: Run = Run()
-    redis: RedisConfig = RedisConfig()
+    redis_conf: RedisConfig
     api: PrefixConfig = PrefixConfig()
     log: LoggingConfig = LoggingConfig()
     roles: ConfigRoles = ConfigRoles()
