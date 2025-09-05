@@ -1,4 +1,5 @@
 import json
+from decimal import Decimal
 from typing import Annotated, List
 from uuid import UUID
 
@@ -74,7 +75,10 @@ async def update_product_by_id(
         data_update=data_update,
         product=product,
     )
-    message_bytes = json.dumps(data_update.model_dump()).encode("utf-8")
+    message_bytes = json.dumps(
+        data_update.model_dump(),
+        default=lambda v: float(v) if isinstance(v, Decimal) else v,
+    ).encode("utf-8")
     await producer.send_and_wait("PRODUCT_UPDATED", message_bytes)
     return product_update
 
@@ -93,7 +97,10 @@ async def update_product_by_id_partial(
     product_update = await update_product(
         session=session, data_update=data_update, product=product, partial=True
     )
-    message_bytes = json.dumps(data_update.model_dump()).encode("utf-8")
+    message_bytes = json.dumps(
+        data_update.model_dump(),
+        default=lambda v: float(v) if isinstance(v, Decimal) else v,
+    ).encode("utf-8")
     await producer.send_and_wait("PRODUCT_UPDATED", message_bytes)
     return product_update
 
