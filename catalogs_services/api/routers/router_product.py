@@ -70,17 +70,24 @@ async def update_product_by_id(
     producer: Annotated[AIOKafkaProducer, Depends(get_producer)],
     product: Product = Depends(get_product_by_id),
 ) -> ProductRead:
+
+    if data_update is not None and float(data_update.price) != float(product.price):
+        data_product = {
+            "name": product.name,
+            "old_price": product.price,
+            "new_price": data_update.price,
+        }
+        message_bytes = json.dumps(
+            data_product,
+            default=lambda v: float(v) if isinstance(v, Decimal) else v,
+        ).encode("utf-8")
+        await producer.send_and_wait("PRODUCT_UPDATED", message_bytes)
+
     product_update = await update_product(
         session=session,
         data_update=data_update,
         product=product,
     )
-    if data_update.price != product.price:
-        message_bytes = json.dumps(
-            data_update.model_dump(),
-            default=lambda v: float(v) if isinstance(v, Decimal) else v,
-        ).encode("utf-8")
-        await producer.send_and_wait("PRODUCT_UPDATED", message_bytes)
     return ProductRead.model_validate(product_update)
 
 
@@ -95,15 +102,22 @@ async def update_product_by_id_partial(
     producer: Annotated[AIOKafkaProducer, Depends(get_producer)],
     product: Product = Depends(get_product_by_id),
 ) -> ProductRead:
-    product_update = await update_product(
-        session=session, data_update=data_update, product=product, partial=True
-    )
-    if product_update is not None and product_update.price != product.price:
+
+    if data_update is not None and float(data_update.price) != float(product.price):
+        data_product = {
+            "name": product.name,
+            "old_price": product.price,
+            "new_price": data_update.price,
+        }
         message_bytes = json.dumps(
-            data_update.model_dump(),
+            data_product,
             default=lambda v: float(v) if isinstance(v, Decimal) else v,
         ).encode("utf-8")
         await producer.send_and_wait("PRODUCT_UPDATED", message_bytes)
+
+    product_update = await update_product(
+        session=session, data_update=data_update, product=product, partial=True
+    )
     return ProductRead.model_validate(product_update)
 
 
