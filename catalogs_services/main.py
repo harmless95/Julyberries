@@ -32,7 +32,7 @@ async def lifespan(app: FastAPI):
 
     producer = AIOKafkaProducer(
         bootstrap_servers="kafka1:9090",
-        client_id="my-fastapi-app",
+        client_id="product-app",
     )
     await producer.start()
     app.state.producer = producer
