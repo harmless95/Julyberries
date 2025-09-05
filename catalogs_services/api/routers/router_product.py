@@ -69,18 +69,19 @@ async def update_product_by_id(
     session: Annotated[AsyncSession, Depends(helper_db.session_getter)],
     producer: Annotated[AIOKafkaProducer, Depends(get_producer)],
     product: Product = Depends(get_product_by_id),
-) -> Product:
+) -> ProductRead:
     product_update = await update_product(
         session=session,
         data_update=data_update,
         product=product,
     )
-    message_bytes = json.dumps(
-        data_update.model_dump(),
-        default=lambda v: float(v) if isinstance(v, Decimal) else v,
-    ).encode("utf-8")
-    await producer.send_and_wait("PRODUCT_UPDATED", message_bytes)
-    return product_update
+    if data_update.price != product.price:
+        message_bytes = json.dumps(
+            data_update.model_dump(),
+            default=lambda v: float(v) if isinstance(v, Decimal) else v,
+        ).encode("utf-8")
+        await producer.send_and_wait("PRODUCT_UPDATED", message_bytes)
+    return ProductRead.model_validate(product_update)
 
 
 @router.patch(
@@ -93,16 +94,17 @@ async def update_product_by_id_partial(
     session: Annotated[AsyncSession, Depends(helper_db.session_getter)],
     producer: Annotated[AIOKafkaProducer, Depends(get_producer)],
     product: Product = Depends(get_product_by_id),
-) -> Product:
+) -> ProductRead:
     product_update = await update_product(
         session=session, data_update=data_update, product=product, partial=True
     )
-    message_bytes = json.dumps(
-        data_update.model_dump(),
-        default=lambda v: float(v) if isinstance(v, Decimal) else v,
-    ).encode("utf-8")
-    await producer.send_and_wait("PRODUCT_UPDATED", message_bytes)
-    return product_update
+    if product_update is not None and product_update.price != product.price:
+        message_bytes = json.dumps(
+            data_update.model_dump(),
+            default=lambda v: float(v) if isinstance(v, Decimal) else v,
+        ).encode("utf-8")
+        await producer.send_and_wait("PRODUCT_UPDATED", message_bytes)
+    return ProductRead.model_validate(product_update)
 
 
 @router.delete(
