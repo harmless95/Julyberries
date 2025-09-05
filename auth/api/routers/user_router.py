@@ -9,6 +9,7 @@ from api.dependecies.user_token import (
     get_user_token,
     get_user_refresh_token,
     validation_user,
+    user_role,
 )
 
 from api.dependecies.redis_token import get_stored_refresh_token, store_refresh_token
@@ -143,3 +144,15 @@ async def verify_token(
         "name": user.name,
         "logged_in_at": logged_in_at,
     }
+
+
+@router.post("/permission_check/")
+async def permission_check(
+    session: Annotated[AsyncSession, Depends(helper_db.session_getter)],
+    request: Request,
+):
+    data = await request.json()
+    token = data.get("token")
+    permission_code = data.get("code")
+    return await user_role(session=session, token=token, product_code=permission_code)
+
