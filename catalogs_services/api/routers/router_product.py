@@ -1,8 +1,10 @@
+import json
 from typing import Annotated, List
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, status
+from aiokafka import AIOKafkaProducer
 
 from api.CRUD.crud_products import (
     get_all,
@@ -10,6 +12,8 @@ from api.CRUD.crud_products import (
     create_product,
     update_product,
 )
+
+from api.dependencies.kafka_state import get_producer
 from core.model import helper_db
 from core.schemas.schema_product import ProductRead, ProductCreate, ProductUpdate
 from core.model import Product
@@ -62,6 +66,7 @@ async def create_new_product(
 async def update_product_by_id(
     data_update: ProductUpdate,
     session: Annotated[AsyncSession, Depends(helper_db.session_getter)],
+    producer: Annotated[AIOKafkaProducer, Depends(get_producer)],
     product: Product = Depends(get_product_by_id),
 ) -> Product:
     product_update = await update_product(
@@ -69,6 +74,8 @@ async def update_product_by_id(
         data_update=data_update,
         product=product,
     )
+    message_bytes = json.dumps(data_update.model_dump()).encode("utf-8")
+    await producer.send_and_wait("PRODUCT_UPDATED", message_bytes)
     return product_update
 
 
@@ -80,11 +87,14 @@ async def update_product_by_id(
 async def update_product_by_id_partial(
     data_update: ProductUpdate,
     session: Annotated[AsyncSession, Depends(helper_db.session_getter)],
+    producer: Annotated[AIOKafkaProducer, Depends(get_producer)],
     product: Product = Depends(get_product_by_id),
 ) -> Product:
     product_update = await update_product(
         session=session, data_update=data_update, product=product, partial=True
     )
+    message_bytes = json.dumps(data_update.dict()).encode("utf-8")
+    await producer.send_and_wait("PRODUCT_UPDATED", message_bytes)
     return product_update
 
 
