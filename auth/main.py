@@ -20,7 +20,7 @@ logging.basicConfig(
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global redis
-    redis = aioredis.from_url(setting.redis.url)
+    redis = aioredis.from_url(setting.redis_conf.url)
     # await main_permission()
     # await main_superuser()
     try:
