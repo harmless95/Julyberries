@@ -155,4 +155,3 @@ async def permission_check(
     token = data.get("token")
     permission_code = data.get("code")
     return await user_role(session=session, token=token, product_code=permission_code)
-
