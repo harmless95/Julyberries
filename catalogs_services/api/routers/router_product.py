@@ -4,7 +4,7 @@ from typing import Annotated, List
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, Request
 from aiokafka import AIOKafkaProducer
 
 from api.CRUD.crud_products import (
@@ -15,6 +15,7 @@ from api.CRUD.crud_products import (
 )
 
 from api.dependencies.kafka_state import get_producer
+from api.dependencies.service_httpx import permission_product
 from core.model import helper_db
 from core.schemas.schema_product import ProductRead, ProductCreate, ProductUpdate
 from core.model import Product
@@ -54,7 +55,10 @@ async def get_product_by_id(
 async def create_new_product(
     session: Annotated[AsyncSession, Depends(helper_db.session_getter)],
     data_product: ProductCreate,
+    request: Request,
 ) -> Product:
+    token = request.headers.get("token")
+    await permission_product(product_code="product.create", token=token)
     product = await create_product(session=session, data_product=data_product)
     return product
 

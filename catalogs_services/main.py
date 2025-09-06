@@ -44,7 +44,7 @@ async def lifespan(app: FastAPI):
 app_catalog_main = FastAPI(lifespan=lifespan)
 app_catalog_main.include_router(router=all_router)
 
-# app_catalog_main.add_middleware(AuthMiddleware)
+app_catalog_main.add_middleware(AuthMiddleware)
 
 
 @app_catalog_main.get("/protected_catalog/")

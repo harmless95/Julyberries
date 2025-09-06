@@ -182,7 +182,7 @@ async def user_role(
     session: AsyncSession,
     token: str,
     product_code: str,
-) -> Role | None:
+) -> bool:
     payload = await validate_payload(token=token)
     user_email = payload.get("sub")
 
@@ -197,17 +197,6 @@ async def user_role(
     if not user or not user.role:
         raise HTTPException(status_code=404, detail="User or role not found")
 
-    # user_role_id = user.role.id
-    # stmt_per = select(RolesPermission).where(RolesPermission.role_r == user_role_id)
-    # result_per = await session.scalars(stmt_per)
-    # roles_permission = result_per.first()
-    # await session.refresh(roles_permission)
-    # permission_id = roles_permission.permission_id
-    # stmt_p = select(Permission).where(Permission.id == permission_id)
-    # result_p = await session.scalars(stmt_p)
-    # permission = result_p.first()
-    # await session.refresh(permission)
-    # if permission.code != product_code:
     permissions_codes = {p.code for p in user.role.permissions_helper}
     if product_code not in permissions_codes:
         raise HTTPException(
