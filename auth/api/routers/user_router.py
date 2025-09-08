@@ -1,4 +1,5 @@
 from typing import Annotated
+import logging
 from fastapi import APIRouter, Depends, status, HTTPException, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,10 +10,11 @@ from api.dependecies.user_token import (
     get_user_token,
     get_user_refresh_token,
     validation_user,
-    user_role,
 )
 
 from api.dependecies.redis_token import get_stored_refresh_token, store_refresh_token
+
+from api.dependecies.user_role import user_role
 from core.config import setting
 from core.model import helper_db, AccessToken
 from core.schemas.token import TokenBase
@@ -23,6 +25,8 @@ router = APIRouter(
     tags=[setting.api.tags],
     dependencies=[Depends(setting.auth_jwt.http_bearer)],
 )
+
+log = logging.getLogger(__name__)
 
 
 @router.post(
@@ -138,20 +142,12 @@ async def verify_token(
     token = data.get("token")
     # Тут логика проверки токена (например, JWT decode)
     user, payload_user = await get_user_token(session=session, token=token)
+    permission_code = await user_role(session=session, token=token)
+    log.warning("permission code: %s", permission_code)
     logged_in_at = payload_user.get("logged_in_at")
     return {
         "email": user.email,
         "name": user.name,
         "logged_in_at": logged_in_at,
+        "permission": permission_code,
     }
-
-
-@router.post("/permission_check/")
-async def permission_check(
-    session: Annotated[AsyncSession, Depends(helper_db.session_getter)],
-    request: Request,
-):
-    data = await request.json()
-    token = data.get("token")
-    permission_code = data.get("code")
-    return await user_role(session=session, token=token, product_code=permission_code)
