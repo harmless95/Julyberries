@@ -1,6 +1,9 @@
 from fastapi import Request, HTTPException, status
 from starlette.middleware.base import BaseHTTPMiddleware
 import httpx
+import logging
+
+log = logging.getLogger(__name__)
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
@@ -16,12 +19,14 @@ class AuthMiddleware(BaseHTTPMiddleware):
             response = await client.post(
                 "http://app_auth:8000/auth/verify_token/", json={"token": token}
             )
+            log.warning("Status code: %s", response.status_code)
             if response.status_code != 200:
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Invalid token",
                 )
             user_info = response.json()
+            log.warning("Data user %s", user_info)
         request.state.user = user_info
         response = await call_next(request)
         return response
