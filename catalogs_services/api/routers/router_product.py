@@ -4,7 +4,7 @@ from typing import Annotated, List
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import APIRouter, Depends, status, Request
+from fastapi import APIRouter, Depends, status, Request, HTTPException
 from aiokafka import AIOKafkaProducer
 
 from api.CRUD.crud_products import (
@@ -57,8 +57,13 @@ async def create_new_product(
     data_product: ProductCreate,
     request: Request,
 ) -> Product:
-    token = request.headers.get("token")
-    await permission_product(product_code="product.create", token=token)
+    permission_codes = request.state.user.get("permission")
+    if "product.create" not in permission_codes:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No access for this operation",
+        )
+
     product = await create_product(session=session, data_product=data_product)
     return product
 
