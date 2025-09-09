@@ -80,17 +80,17 @@ async def update_product_by_id(
     product: Product = Depends(get_product_by_id),
 ) -> ProductRead:
 
-    if data_update is not None and float(data_update.price) != float(product.price):
-        data_product = {
-            "name": product.name,
-            "old_price": product.price,
-            "new_price": data_update.price,
-        }
-        message_bytes = json.dumps(
-            data_product,
-            default=lambda v: float(v) if isinstance(v, Decimal) else v,
-        ).encode("utf-8")
-        await producer.send_and_wait("PRODUCT_UPDATED", message_bytes)
+    permission_codes = request.state.user.get("permission")
+    await check_permission(
+        permission_codes=permission_codes,
+        product_code="product.update",
+    )
+
+    await validate_price_decimal(
+        data_update=data_update,
+        product=product,
+        producer=producer,
+    )
 
     product_update = await update_product(
         session=session,
@@ -112,17 +112,17 @@ async def update_product_by_id_partial(
     product: Product = Depends(get_product_by_id),
 ) -> ProductRead:
 
-    if data_update is not None and float(data_update.price) != float(product.price):
-        data_product = {
-            "name": product.name,
-            "old_price": product.price,
-            "new_price": data_update.price,
-        }
-        message_bytes = json.dumps(
-            data_product,
-            default=lambda v: float(v) if isinstance(v, Decimal) else v,
-        ).encode("utf-8")
-        await producer.send_and_wait("PRODUCT_UPDATED", message_bytes)
+    permission_codes = request.state.user.get("permission")
+    await check_permission(
+        permission_codes=permission_codes,
+        product_code="product.update",
+    )
+
+    await validate_price_decimal(
+        data_update=data_update,
+        product=product,
+        producer=producer,
+    )
 
     product_update = await update_product(
         session=session, data_update=data_update, product=product, partial=True
