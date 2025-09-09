@@ -31,7 +31,7 @@ async def lifespan(app: FastAPI):
     FastAPICache.init(RedisBackend(redis=redis), prefix="fastapi-cache")
 
     producer = AIOKafkaProducer(
-        bootstrap_servers="kafka1:9090",
+        bootstrap_servers=["kafka1:9090"],
         client_id="product-app",
     )
     await producer.start()
