@@ -3,7 +3,7 @@ import httpx
 import locale
 import asyncio
 
-locale.setlocale(locale.LC_NUMERIC, "ru_RU.UTF-8")
+locale.setlocale(locale.LC_NUMERIC, "")
 
 
 def convert_number_locale(value):
