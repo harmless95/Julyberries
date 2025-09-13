@@ -1,0 +1,14 @@
+[tool.poetry]
+package-mode=false
+
+[tool.poetry.dependencies]
+python="^3.13.5"
+pydantic-settings = "^2.10.1"
+celery = "^5.5.3"
+redis = "^6.4.0"
+fastapi = "^0.116.1"
+flower = "^2.0.1"
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
+
