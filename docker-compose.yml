@@ -31,6 +31,8 @@ services:
     depends_on:
       pg:
         condition: service_healthy
+      kafka1:
+        condition: service_healthy
     develop:
       watch:
         - action: sync+restart
@@ -125,6 +127,12 @@ services:
       - "9092:9092"
     volumes:
       - ${KAFKA1_VOLUME_PATH:-./volumes_kafka/server-1}:/bitnami/kafka
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c '</dev/tcp/localhost/9092'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
 
   kafka2:
     image: bitnami/kafka:latest
