@@ -176,11 +176,40 @@ services:
       context: .
     working_dir: /example_api_services
     ports:
-      - "5555:8000"
+      - "4444:8000"
     depends_on:
       pg:
         condition: service_healthy
 
+  worker:
+    build:
+      dockerfile: Docker-build/celery_build/Dockerfile
+    command: celery -A celery_app.app worker --loglevel=info
+    working_dir: /celery_services
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+
+  beat:
+    build:
+      dockerfile: Docker-build/celery_build/Dockerfile
+    command: celery -A celery_app.app beat --loglevel=info
+    working_dir: /celery_services
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+
+  flower:
+    build:
+      dockerfile: Docker-build/celery_build/Dockerfile
+    command: celery -A celery_app.app flower --port=5555
+    working_dir: /celery_services
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
 
 volumes:
   pgdata:
