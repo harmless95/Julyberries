@@ -162,6 +162,17 @@ services:
     volumes:
       - ${KAFKA1_VOLUME_PATH:-./volumes_kafka/server-3}:/bitnami/kafka
 
+  example_api_services:
+    build:
+      dockerfile: Docker-build/example_api/Dockerfile
+      context: .
+    working_dir: /example_api_services
+    ports:
+      - "5555:8000"
+    depends_on:
+      pg:
+        condition: service_healthy
+
 
 volumes:
   pgdata:
