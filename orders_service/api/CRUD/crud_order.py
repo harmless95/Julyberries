@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, Request
 
 from api.Dependencies.service_httpx import is_cast_present_all
 
@@ -19,12 +19,15 @@ async def get_order(session: AsyncSession, order_id: int) -> Order:
 
 
 async def create_order(
+    request: Request,
     session: AsyncSession,
     data_order: OrderCreate,
 ) -> Order:
 
     grocery_basket = {}
-    products_all = await is_cast_present_all(url_service=setting.product.url)
+    products_all = await is_cast_present_all(
+        url_service=setting.product.url, request=request
+    )
     products = data_order.products_name
     for product_name in products:
         product_res = next(
