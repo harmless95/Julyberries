@@ -10,7 +10,7 @@ app = Celery("celery_app", broker=setting.redis_conf.url)
 app.conf.beat_schedule = {
     "run": {
         "task": "celery_app.rate_valute",
-        "schedule": crontab(second=f"*/{setting.redis_conf.expire_second}"),
+        "schedule": setting.redis_conf.expire_second,
     }
 }
 
