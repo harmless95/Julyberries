@@ -1,5 +1,6 @@
 from decimal import Decimal
 from uuid import UUID
+import logging
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -10,6 +11,9 @@ from api.Dependencies.service_httpx import is_cast_present_all
 from core.config import setting
 from core.model import Order
 from core.schemas.schema_orders import OrderCreate
+from utils.redis_valute import main_redis
+
+log = logging.getLogger(__name__)
 
 
 async def get_order(session: AsyncSession, order_id: UUID) -> Order:
@@ -47,11 +51,15 @@ async def create_order(
             Decimal(product_res["price"]) * count_product
         )
     cart_price_sum = sum(grocery_basket.values())
-    total_price = cart_price_sum + data_order.delivery_price
+    amount_currency = cart_price_sum
+    if data_order.currency:
+        rate_currency = main_redis(data_order.currency)
+        amount_currency = float(cart_price_sum) * float(rate_currency)
+    total_price = amount_currency + data_order.delivery_price
     order = Order(
         user_id=request.state.user["id"],
         total_price=total_price,
-        cart_price=cart_price_sum,
+        cart_price=amount_currency,
         delivery_price=data_order.delivery_price,
         status=data_order.status,
     )
