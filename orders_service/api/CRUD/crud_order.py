@@ -1,4 +1,5 @@
 from decimal import Decimal
+from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -11,7 +12,7 @@ from core.model import Order
 from core.schemas.schema_orders import OrderCreate
 
 
-async def get_order(session: AsyncSession, order_id: int) -> Order:
+async def get_order(session: AsyncSession, order_id: UUID) -> Order:
     stmt = select(Order).where(Order.id == order_id)
     result = await session.scalars(stmt)
     order = result.first()
@@ -42,7 +43,7 @@ async def create_order(
     cart_price_sum = sum(grocery_basket.values())
     total_price = cart_price_sum + data_order.delivery_price
     order = Order(
-        user_id=data_order.user_id,
+        user_id=request.state.user["id"],
         total_price=total_price,
         cart_price=cart_price_sum,
         delivery_price=data_order.delivery_price,

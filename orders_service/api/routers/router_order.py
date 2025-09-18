@@ -1,4 +1,5 @@
 from typing import Annotated
+from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, status, Request
 
@@ -17,7 +18,7 @@ router = APIRouter(prefix="/orders", tags=["Order"])
 async def get_order_by_id(
     request: Request,
     session: Annotated[AsyncSession, Depends(helper_db.session_getter)],
-    order_id: int,
+    order_id: UUID,
 ) -> Order:
     order = await get_order(session=session, order_id=order_id, request=request)
     return order
