@@ -148,6 +148,7 @@ async def verify_token(
     return {
         "email": user.email,
         "name": user.name,
+        "id": user.id,
         "logged_in_at": logged_in_at,
         "permission": permission_code,
     }
