@@ -51,6 +51,10 @@ class LoggingConfig(BaseModel):
     log_format: str = LOG_DEFAULT_FORMAT
 
 
+class RedisConfig(BaseModel):
+    url: str = "redis://:redis_p@redis:6379/0"
+
+
 class Setting(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(
@@ -62,6 +66,7 @@ class Setting(BaseSettings):
         env_prefix="APP_CONFIG__",
     )
     db: DataBaseConfig
+    redis_order: RedisConfig = RedisConfig()
     run: Run = Run()
     api: PrefixConfig = PrefixConfig()
     log: LoggingConfig = LoggingConfig()
