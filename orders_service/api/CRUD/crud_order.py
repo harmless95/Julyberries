@@ -29,8 +29,12 @@ async def create_order(
     products_all = await is_cast_present_all(
         url_service=setting.product.url, request=request
     )
-    products = data_order.products_name
-    for product_name in products:
+    products = (
+        data_order.products_name
+    )  # [{"name": "яблоко", "count": 1}, {"name": "яблоко", "count": 4}]
+    for product in products:
+        count_product = product.count
+        product_name = product.name
         product_res = next(
             (item for item in products_all if item.get("name") == product_name), None
         )
@@ -39,7 +43,9 @@ async def create_order(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"Invalid product: {product_name} not found",
             )
-        grocery_basket[product_res["name"]] = Decimal(product_res["price"])
+        grocery_basket[product_res["name"]] = (
+            Decimal(product_res["price"]) * count_product
+        )
     cart_price_sum = sum(grocery_basket.values())
     total_price = cart_price_sum + data_order.delivery_price
     order = Order(

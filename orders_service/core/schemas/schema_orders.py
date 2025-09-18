@@ -1,13 +1,13 @@
 from datetime import datetime
 from decimal import Decimal
 from uuid import UUID
-
 from pydantic import BaseModel, ConfigDict
+
+from .schema_order_item import OrderItemCreate
 
 
 class OrderCreate(BaseModel):
-    user_id: UUID
-    products_name: list[str]
+    products_name: list[OrderItemCreate]
     delivery_price: int
     status: str
 
