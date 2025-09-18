@@ -10,6 +10,7 @@ class OrderCreate(BaseModel):
     products_name: list[OrderItemCreate]
     delivery_price: int
     status: str
+    currency: str = "USD"
 
     model_config = ConfigDict(from_attributes=True)
 
