@@ -10,7 +10,7 @@ from api.Dependencies.service_httpx import is_cast_present_all
 
 from core.config import setting
 from core.model import Order, OrderItem
-from core.schemas.schema_orders import OrderCreate
+from core.schemas.schema_orders import OrderCreate, OrderUpdate
 from utils.redis_valute import main_redis
 
 log = logging.getLogger(__name__)
@@ -96,3 +96,17 @@ async def create_order(
     await session.commit()
 
     return order
+
+
+async def update_order_by_id(
+    session: AsyncSession,
+    data_order: Order,
+    data_update: OrderUpdate,
+    partial: bool = False,
+) -> Order:
+    for name, value in data_update.model_dump(exclude_unset=partial).items():
+        setattr(data_order, name, value)
+    session.add(data_order)
+    await session.commit()
+    await session.refresh(data_order)
+    return data_order
