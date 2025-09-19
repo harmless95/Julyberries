@@ -25,3 +25,14 @@ class OrderRead(BaseModel):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True, arbitrary_types_allowed=True)
+
+
+class OrderUpdate(BaseModel):
+    user_id: UUID | None = None
+    total_price: Decimal | None = None
+    cart_price: Decimal | None = None
+    delivery_price: Decimal | None = None
+    status: str | None = None
+    created_at: datetime | None = None
+
+    model_config = ConfigDict(from_attributes=True)
