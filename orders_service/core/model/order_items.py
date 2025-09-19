@@ -21,7 +21,7 @@ class OrderItem(Base, IdPrKey):
     ),
     )
     # fmt: on
-    order_id: Mapped[UUID] = mapped_column(ForeignKey("orders.id"))
+    order_id: Mapped[UUID] = mapped_column(ForeignKey("orders.id", ondelete="CASCADE"))
     product_id: Mapped[UUID] = mapped_column()
     quantity: Mapped[int] = mapped_column()
     unit_price: Mapped[float] = mapped_column(DOUBLE_PRECISION)

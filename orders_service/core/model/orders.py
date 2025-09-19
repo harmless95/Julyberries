@@ -24,4 +24,8 @@ class Order(Base, IdPrKey):
         nullable=False,
     )
 
-    product_item: Mapped[list["OrderItem"]] = relationship(back_populates="order")
+    product_item: Mapped[list["OrderItem"]] = relationship(
+        back_populates="order",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
