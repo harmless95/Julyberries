@@ -32,7 +32,7 @@ class LoggingConfig(BaseModel):
 
 class ConfigRedis(BaseModel):
     url: str
-    expire_second: int = 3600
+    expire_second: int = 60
 
 
 class Setting(BaseSettings):
