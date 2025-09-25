@@ -211,6 +211,32 @@ services:
     depends_on:
       - redis
 
+  reviews:
+    build:
+      dockerfile: Docker-build/reviews/Dockerfile
+      context: .
+    ports:
+      - "5356:8000"
+    depends_on:
+      mongo_db:
+        condition: service_healthy
+
+  mongo_db:
+    image: mongo:latest
+    container_name: "mongo_database"
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/mongo/data
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "mongosh --eval 'db.adminCommand(\"ping\")' || exit 1" ]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
 volumes:
   pgdata:
   redis_data:
+  mongo_data:
+    driver: local
