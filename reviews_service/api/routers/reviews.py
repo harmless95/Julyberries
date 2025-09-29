@@ -9,9 +9,8 @@ router = APIRouter(prefix=setting.api.prefix, tags=[setting.api.tags])
 
 @router.post(
     "/",
-    response_model=ReviewsRead,
     status_code=status.HTTP_201_CREATED,
 )
-async def add_reviews(data_reviews: ReviewsCreate) -> ReviewsRead:
+async def add_reviews(data_reviews: ReviewsCreate):
     result = await create_reviews(data_reviews=data_reviews)
     return result
