@@ -1,15 +1,20 @@
 import uvicorn
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
+from motor.motor_asyncio import AsyncIOMotorClient
+from beanie import init_beanie
 
 from core.config import setting
 from api.routers.reviews import router
-from core.models.helper_db import connect_mongo_db
+from core.models.reviews import Reviews
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    client = await connect_mongo_db()
+    client = AsyncIOMotorClient("mongodb://mongo_db:27017")
+    db = client["testing_mmm"]
+    await init_beanie(database=db, document_models=[Reviews])
+    app.state.client = client
     yield
     client.close()
 
