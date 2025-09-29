@@ -6,9 +6,8 @@ from core.config import setting
 
 
 class Reviews(Document):
-    id: str = Field(alias="_id")
     product_id: Indexed(str)
-    user_id: str
+    user_id: UUID
     rating: int
     text: str = Field(default="")
 
