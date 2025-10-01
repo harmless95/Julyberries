@@ -1,4 +1,3 @@
-from uuid import UUID
 from beanie import Indexed, Document
 from pydantic import Field, conint
 from datetime import datetime
