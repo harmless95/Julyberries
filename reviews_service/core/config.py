@@ -10,6 +10,10 @@ LOG_DEFAULT_FORMAT = "[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(leve
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+class ServiceProduct(BaseModel):
+    url: str = "http://catalogs_services:8000/products/"
+
+
 class PrefixConfig(BaseModel):
     prefix: str = "/reviews"
     tags: str = "Reviews"
@@ -49,6 +53,7 @@ class Setting(BaseSettings):
     mongo_config: MongoConfig = MongoConfig()
     api: PrefixConfig = PrefixConfig()
     log: LoggingConfig = LoggingConfig()
+    product_service: ServiceProduct = ServiceProduct()
 
 
 setting = Setting()
