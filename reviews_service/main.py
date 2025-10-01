@@ -1,5 +1,5 @@
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from contextlib import asynccontextmanager
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
@@ -7,6 +7,7 @@ from beanie import init_beanie
 from core.config import setting
 from api.routers.reviews import router
 from core.models.reviews import Reviews
+from core.authorization.middleware_auth import MiddlewareAuth
 
 
 @asynccontextmanager
@@ -21,6 +22,13 @@ async def lifespan(app: FastAPI):
 
 app_reviews = FastAPI(lifespan=lifespan)
 app_reviews.include_router(router=router)
+app_reviews.add_middleware(MiddlewareAuth)
+
+
+@app_reviews.get("/protected_reviews/")
+async def protected_endpoint(request: Request):
+    return {"message": f"Привет {request.state.user}. Доступ разрешен."}
+
 
 if __name__ == "__main__":
     uvicorn.run("main:app_reviews", host=setting.run.host, port=setting.run.port)
