@@ -24,8 +24,8 @@ async def create_reviews(
     )
     product_dict = await get_product_dict(products_all)
     product = product_dict.get(product_name)
-    product_id = product.get("id")
-    user_id = request.state.user.get("id")
+    product_id = str(product.get("id"))
+    user_id = str(request.state.user.get("id"))
     review = Reviews(
         product_id=product_id,
         user_id=user_id,
