@@ -1,9 +1,15 @@
-from core.models.reviews import Reviews
 import uuid
+from fastapi import Request
+
+from core.models.reviews import Reviews
+from core.schema.reviews_schema import ReviewsCreate
 
 
-async def create_reviews(data_reviews) -> Reviews:
-    user_id = uuid.UUID("00000000-0000-0000-0000-000000000000")
+async def create_reviews(
+    data_reviews: ReviewsCreate,
+    request: Request,
+) -> Reviews:
+    user_id = request.state.user.get("id")
     review = Reviews(
         product_id=data_reviews.product_id,
         user_id=user_id,

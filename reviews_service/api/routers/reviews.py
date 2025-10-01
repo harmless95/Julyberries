@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, Request
 
 from api.CRUD.reviews_crud import create_reviews
 from core.config import setting
@@ -11,6 +11,9 @@ router = APIRouter(prefix=setting.api.prefix, tags=[setting.api.tags])
     "/",
     status_code=status.HTTP_201_CREATED,
 )
-async def add_reviews(data_reviews: ReviewsCreate):
-    result = await create_reviews(data_reviews=data_reviews)
+async def add_reviews(
+    data_reviews: ReviewsCreate,
+    request: Request,
+):
+    result = await create_reviews(data_reviews=data_reviews, request=request)
     return result
