@@ -3,7 +3,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class ReviewsCreate(BaseModel):
-    product_id: str
+    product_name: str
     rating: int
     text: str = Field(default="")
 
@@ -15,7 +15,7 @@ class ReviewsCreate(BaseModel):
 
 class ReviewsRead(BaseModel):
     id: str = Field(alias="_id")
-    product_id: str
+    product_name: str
     user_id: str
     rating: int
     text: str = Field(default="")
