@@ -4,14 +4,30 @@ from fastapi import Request
 from core.models.reviews import Reviews
 from core.schema.reviews_schema import ReviewsCreate
 
+from api.Dependencies.service_httpx import is_cast_present_all
+
+from core.config import setting
+
+
+async def get_product_dict(products_all: list) -> dict:
+    # Создаём словарь для быстрого поиска продукта по имени
+    return {item["name"]: item for item in products_all}
+
 
 async def create_reviews(
     data_reviews: ReviewsCreate,
     request: Request,
 ) -> Reviews:
+    product_name = data_reviews.product_name
+    products_all = await is_cast_present_all(
+        url_service=setting.product_service.url, request=request
+    )
+    product_dict = await get_product_dict(products_all)
+    product = product_dict.get(product_name)
+    product_id = product.get("id")
     user_id = request.state.user.get("id")
     review = Reviews(
-        product_id=data_reviews.product_id,
+        product_id=product_id,
         user_id=user_id,
         rating=data_reviews.rating,
         text=data_reviews.text,
