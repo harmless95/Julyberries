@@ -18,6 +18,8 @@ services:
           target: /app_auth
         - action: rebuild
           path: auth/poetry.lock
+    networks:
+      - backend_network
 
   catalogs_services:
     build:
@@ -40,6 +42,8 @@ services:
           target: /catalogs_services
         - action: rebuild
           path: catalogs_services/poetry.lock
+    networks:
+      - backend_network
 
   orders_service:
     build:
@@ -60,6 +64,8 @@ services:
           target: /orders_service
         - action: rebuild
           path: orders_service/poetry.lock
+    networks:
+      - backend_network
 
   pg:
     image: postgres
@@ -78,6 +84,8 @@ services:
       interval: 5s
       timeout: 3s
       retries: 3
+    networks:
+      - backend_network
 
 
   pgadmin:
@@ -91,6 +99,8 @@ services:
     depends_on:
       pg:
         condition: service_healthy
+    networks:
+      - backend_network
 
   redis:
     image: redis:latest
@@ -108,6 +118,8 @@ services:
     restart: unless-stopped
     tty: true
     stdin_open: true
+    networks:
+      - backend_network
 
   kafka1:
     image: bitnami/kafka:latest
@@ -133,6 +145,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 40s
+    networks:
+      - backend_network
 
   kafka2:
     image: bitnami/kafka:latest
@@ -151,6 +165,8 @@ services:
       - "9094:9094"
     volumes:
       - ${KAFKA1_VOLUME_PATH:-./volumes_kafka/server-2}:/bitnami/kafka
+    networks:
+      - backend_network
 
   kafka3:
     image: bitnami/kafka:latest
@@ -169,6 +185,8 @@ services:
       - "9096:9096"
     volumes:
       - ${KAFKA1_VOLUME_PATH:-./volumes_kafka/server-3}:/bitnami/kafka
+    networks:
+      - backend_network
 
   example_api_services:
     build:
@@ -180,6 +198,8 @@ services:
     depends_on:
       pg:
         condition: service_healthy
+    networks:
+      - backend_network
 
   worker:
     build:
@@ -190,6 +210,8 @@ services:
       - .:/app
     depends_on:
       - redis
+    networks:
+      - backend_network
 
   beat:
     build:
@@ -200,6 +222,8 @@ services:
       - .:/app
     depends_on:
       - redis
+    networks:
+      - backend_network
 
   flower:
     build:
@@ -210,6 +234,8 @@ services:
       - "5555:5555"
     depends_on:
       - redis
+    networks:
+      - backend_network
 
   reviews:
     build:
@@ -220,6 +246,10 @@ services:
     depends_on:
       mongo_db:
         condition: service_healthy
+      kafka1:
+        condition: service_healthy
+    networks:
+      - backend_network
 
   mongo_db:
     image: mongo:latest
@@ -234,6 +264,12 @@ services:
       interval: 5s
       timeout: 3s
       retries: 3
+    networks:
+      - backend_network
+
+networks:
+  backend_network:
+    driver: bridge
 
 volumes:
   pgdata:
