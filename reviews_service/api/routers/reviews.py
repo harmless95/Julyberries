@@ -58,3 +58,11 @@ async def update_review(
         partial=True,
     )
     return result
+
+
+@router.delete(
+    "/{product_id}/",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def delete_review(data_review: Reviews = Depends(get_review_by_id)) -> None:
+    await data_review.delete()
