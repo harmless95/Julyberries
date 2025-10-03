@@ -1,5 +1,5 @@
 from uuid import UUID
-from fastapi import Request
+from fastapi import Request, HTTPException, status
 
 from core.models.reviews import Reviews
 from core.schema.reviews_schema import ReviewsCreate, ReviewsUpdate
@@ -36,22 +36,36 @@ async def create_reviews(
     return data_review
 
 
-async def get_reviews_by_id(product_id: UUID):
+async def get_reviews_by_id(product_id: UUID) -> list[Reviews]:
     reviews = await Reviews.find(Reviews.product_id == str(product_id)).to_list()
+    if not reviews:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No reviews found for {product_id}.",
+        )
     return reviews
 
 
-async def get_review_by_id(product_id: UUID):
-    reviews = await Reviews.find_one(Reviews.product_id == str(product_id))
-    return reviews
+async def get_review_by_id(product_id: UUID) -> Reviews:
+    review = await Reviews.find_one(Reviews.product_id == str(product_id))
+    if not review:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No review found for {product_id}.",
+        )
+    return review
 
 
 async def update_review_by_product_id(
     data_update: ReviewsUpdate,
     data_review: Reviews,
     partial: bool = False,
-):
-
+) -> Reviews:
+    if not data_update:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No data to update",
+        )
     for name, value in data_update.model_dump(exclude_unset=partial).items():
         setattr(data_review, name, value)
     await data_review.save()
