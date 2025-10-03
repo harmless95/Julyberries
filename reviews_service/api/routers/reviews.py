@@ -1,8 +1,9 @@
 from typing import Annotated
 from fastapi import APIRouter, status, Request, Depends
 from aiokafka import AIOKafkaProducer
+from uuid import UUID
 
-from api.CRUD.reviews_crud import create_reviews
+from api.CRUD.reviews_crud import create_reviews, get_review_by_id
 
 from api.Dependencies.kafka_state import get_producer
 
@@ -27,4 +28,12 @@ async def add_reviews(
         review_data=result,
         producer=producer,
     )
+    return result
+
+
+@router.get("/{product_id}/")
+async def get_review(
+    product_id: UUID,
+):
+    result = await get_review_by_id(product_id=product_id)
     return result

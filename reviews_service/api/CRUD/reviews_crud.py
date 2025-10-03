@@ -1,4 +1,4 @@
-import uuid
+from uuid import UUID
 from fastapi import Request
 
 from core.models.reviews import Reviews
@@ -34,3 +34,8 @@ async def create_reviews(
     )
     data_review = await review.insert()
     return data_review
+
+
+async def get_review_by_id(product_id: UUID):
+    reviews = await Reviews.find(Reviews.product_id == str(product_id)).to_list()
+    return reviews
