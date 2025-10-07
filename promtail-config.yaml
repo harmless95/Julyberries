@@ -26,7 +26,7 @@ scrape_configs:
             tag: attrs.tag
 
       - regex:
-          expression: (?P<image_name>[^|]+)\|(?P<container_name>[^|]+)
+          expression: (?P<image_name>(?:[^|]*[^|])).(?P<container_name>(?:[^|]*[^|])).(?P<image_id>(?:[^|]*[^|])).(?P<container_id>(?:[^|]*[^|]))
           source: "tag"
 
       - labels:
