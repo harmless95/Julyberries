@@ -270,7 +270,7 @@ services:
   prometheus:
     image: prom/prometheus:latest
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus.yml:/etc/prometheus_service/prometheus_service.yml:ro
     ports:
       - "9090:9090"
     restart: always

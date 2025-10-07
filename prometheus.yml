@@ -1,0 +1,74 @@
+global:
+  scrape_interval: 3s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "app_auth"
+    static_configs:
+      - targets: ["app_auth:8000"]
+    metrics_path: /metrics
+
+#  - job_name: "catalogs_services"
+#    static_configs:
+#      - targets: [ "catalogs_services:8000" ]
+#    metrics_path: /metrics
+#
+#  - job_name: "orders_service"
+#    static_configs:
+#      - targets: [ "orders_service:8000" ]
+#    metrics_path: /metrics
+#
+#  - job_name: "pg"
+#    static_configs:
+#      - targets: [ "pg:5432" ]
+#    metrics_path: /metrics
+#
+#  - job_name: "redis"
+#    static_configs:
+#      - targets: [ "redis:6379" ]
+#    metrics_path: /metrics
+#
+#  - job_name: "kafka1"
+#    static_configs:
+#      - targets: [ "kafka1:9092" ]
+#    metrics_path: /metrics
+#
+#  - job_name: "kafka2"
+#    static_configs:
+#      - targets: [ "kafka2:9094" ]
+#    metrics_path: /metrics
+#
+#  - job_name: "kafka3"
+#    static_configs:
+#      - targets: [ "kafka3:9096" ]
+#    metrics_path: /metrics
+#
+#  - job_name: "example_api_services"
+#    static_configs:
+#      - targets: [ "example_api_services:8000" ]
+#    metrics_path: /metrics
+#
+#  - job_name: "worker"
+#    static_configs:
+#      - targets: [ "worker:8000" ]
+#    metrics_path: /metrics
+#
+#  - job_name: "beat"
+#    static_configs:
+#      - targets: [ "beat:8000" ]
+#    metrics_path: /metrics
+#
+#  - job_name: "flower"
+#    static_configs:
+#      - targets: [ "flower:5555" ]
+#    metrics_path: /metrics
+#
+#  - job_name: "reviews"
+#    static_configs:
+#      - targets: [ "reviews:8000" ]
+#    metrics_path: /metrics
+#
+#  - job_name: "mongo_db"
+#    static_configs:
+#      - targets: [ "mongo_db:27017" ]
+#    metrics_path: /metrics

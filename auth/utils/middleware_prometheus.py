@@ -3,7 +3,7 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 from starlette.requests import Request
 from starlette.responses import Response
 
-from metrics import (
+from utils.metrics import (
     http_requests_total,
     http_active_requests,
     http_request_duration_seconds,
@@ -11,7 +11,9 @@ from metrics import (
 
 
 class PrometheusMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
+    async def dispatch(
+        self, request: Request, call_next: RequestResponseEndpoint
+    ) -> Response:
         http_active_requests.inc()
         start_time = time.time()
 

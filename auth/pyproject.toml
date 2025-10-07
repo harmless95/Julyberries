@@ -12,6 +12,7 @@ alembic = "^1.16.4"
 asyncpg = "^0.30.0"
 pyjwt = {extras = ["crypto"], version = "^2.10.1"}
 redis = "^6.4.0"
+prometheus-client = "^0.23.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.1.0"

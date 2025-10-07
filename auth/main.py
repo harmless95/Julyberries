@@ -2,14 +2,16 @@
 import uvicorn
 import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from redis import asyncio as aioredis
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
 from api.routers import all_routers
 from core.config import setting
 from core.model import helper_db
 from api.dependecies.redis_client import redis
 from action import main_permission, main_superuser
+from utils.middleware_prometheus import PrometheusMiddleware
 
 logging.basicConfig(
     level=logging.INFO,
@@ -32,6 +34,12 @@ async def lifespan(app: FastAPI):
 
 app_main = FastAPI(lifespan=lifespan)
 app_main.include_router(router=all_routers)
+app_main.add_middleware(PrometheusMiddleware)
+
+
+@app_main.get("/metrics")
+async def metrics():
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 
 @app_main.get("/")
