@@ -5,18 +5,18 @@ from prometheus_client import (
 )
 
 http_requests_total = Counter(
-    "http_requests_total",
+    "auth_requests_total",
     "Total number of HTTP requests",
     ["method", "path", "status"],
 )
 
 http_request_duration_seconds = Histogram(
-    "http_request_duration_seconds",
+    "auth_request_duration_seconds",
     "Duration of HTTP request in seconds",
     ["method", "path", "status"],
 )
 
 http_active_requests = Gauge(
-    "http_active_requests",
+    "auth_active_requests",
     "Number of active requests",
 )
