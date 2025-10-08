@@ -1,3 +1,4 @@
+import json
 from typing import Annotated
 import logging
 from fastapi import APIRouter, Depends, status, HTTPException, Request
@@ -138,7 +139,10 @@ async def verify_token(
     session: Annotated[AsyncSession, Depends(helper_db.session_getter)],
     request: Request,
 ):
-    data = await request.json()
+    try:
+        data = await request.json()
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Empty or invalid request body")
     token = data.get("token")
     # Тут логика проверки токена (например, JWT decode)
     user, payload_user = await get_user_token(session=session, token=token)
