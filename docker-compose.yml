@@ -31,6 +31,7 @@ services:
       dockerfile: Docker-build/catalog/Dockerfile
       context: .
     working_dir: /catalogs_services
+    container_name: catalogs_services
     environment:
       APP_CONFIG__DB__URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pg:5432/${POSTGRES_DB_CATALOG}
     ports:
@@ -47,6 +48,10 @@ services:
           target: /catalogs_services
         - action: rebuild
           path: catalogs_services/poetry.lock
+    logging:
+      driver: json-file
+      options:
+        tag: "{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}"
     networks:
       - backend_network
 
