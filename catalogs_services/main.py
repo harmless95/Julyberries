@@ -5,17 +5,20 @@ import time
 import uvicorn
 import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from redis import asyncio as aioredis
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from fastapi_cache.decorator import cache
 from aiokafka import AIOKafkaProducer
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
 from core.config import setting
 from core.model import helper_db
 from api.routers import all_router
 from core.authoriztion.middleware_auth import AuthMiddleware
+from utils.middleware_prometheus import PrometheusMiddleware
+from utils.exception_middleware import ExceptionHandlingMiddleware
 
 logging.basicConfig(
     level=logging.INFO,
@@ -44,7 +47,14 @@ async def lifespan(app: FastAPI):
 app_catalog_main = FastAPI(lifespan=lifespan)
 app_catalog_main.include_router(router=all_router)
 
+app_catalog_main.add_middleware(ExceptionHandlingMiddleware)
 app_catalog_main.add_middleware(AuthMiddleware)
+app_catalog_main.add_middleware(PrometheusMiddleware)
+
+
+@app_catalog_main.get("/metrics")
+async def metrics():
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 
 @app_catalog_main.get("/protected_catalog/")
