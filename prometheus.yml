@@ -8,10 +8,10 @@ scrape_configs:
       - targets: ["app_auth:8000"]
     metrics_path: /metrics
 
-#  - job_name: "catalogs_services"
-#    static_configs:
-#      - targets: [ "catalogs_services:8000" ]
-#    metrics_path: /metrics
+  - job_name: "catalogs_services"
+    static_configs:
+      - targets: [ "catalogs_services:8000" ]
+    metrics_path: /metrics
 #
 #  - job_name: "orders_service"
 #    static_configs:
