@@ -103,6 +103,42 @@ services:
     networks:
       - backend_network
 
+  postgres_exporter_auth:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: postgres_exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://user:qwe@pg:5432/julyberries_auth?sslmode=disable"
+    ports:
+      - "9187:9187"
+    depends_on:
+      - pg
+    networks:
+      - backend_network
+
+  postgres_exporter_catalog:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: postgres_exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://user:qwe@pg:5432/julyberries_catalog?sslmode=disable"
+    ports:
+      - "9188:9187"
+    depends_on:
+      - pg
+    networks:
+      - backend_network
+
+  postgres_exporter_order:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: postgres_exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://user:qwe@pg:5432/julyberries_catalog?sslmode=disable"
+    ports:
+      - "9189:9187"
+    depends_on:
+      - pg
+    networks:
+      - backend_network
+
 
   pgadmin:
     image: dpage/pgadmin4
