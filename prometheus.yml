@@ -12,16 +12,23 @@ scrape_configs:
     static_configs:
       - targets: [ "catalogs_services:8000" ]
     metrics_path: /metrics
-#
-#  - job_name: "orders_service"
-#    static_configs:
-#      - targets: [ "orders_service:8000" ]
-#    metrics_path: /metrics
-#
-#  - job_name: "pg"
-#    static_configs:
-#      - targets: [ "pg:5432" ]
-#    metrics_path: /metrics
+
+  - job_name: "orders_service"
+    static_configs:
+      - targets: [ "orders_service:8000" ]
+    metrics_path: /metrics
+
+  - job_name: "postgres_exporter_auth"
+    static_configs:
+      - targets: [ "postgres_exporter_auth:9187" ]
+
+  - job_name: "postgres_exporter_catalog"
+    static_configs:
+      - targets: [ "postgres_exporter_catalog:9187" ]
+
+  - job_name: "postgres_exporter_order"
+    static_configs:
+      - targets: [ "postgres_exporter_order:9187" ]
 #
 #  - job_name: "redis"
 #    static_configs:
