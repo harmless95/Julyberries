@@ -60,6 +60,7 @@ services:
       dockerfile: Docker-build/order/Dockerfile
       context: .
     working_dir: /orders_service
+    container_name: orders_service
     environment:
       APP_CONFIG__DB__URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pg:5432/${POSTGRES_DB_ORDER}
     ports:
@@ -74,11 +75,16 @@ services:
           target: /orders_service
         - action: rebuild
           path: orders_service/poetry.lock
+    logging:
+      driver: json-file
+      options:
+        tag: "{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}"
     networks:
       - backend_network
 
   pg:
     image: postgres
+    container_name: pg
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -90,7 +96,7 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready" ]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
       timeout: 3s
       retries: 3
