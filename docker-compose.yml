@@ -253,6 +253,22 @@ services:
     networks:
       - backend_network
 
+  kafka-exporter:
+    image: danielqsj/kafka-exporter:latest
+    container_name: kafka-exporter
+    ports:
+      - "9308:9308"
+    command:
+      - --kafka.server=kafka1:9090
+      - --kafka.server=kafka2:9090
+      - --kafka.server=kafka3:9090
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+    networks:
+      - backend_network
+
   example_api_services:
     build:
       dockerfile: Docker-build/example_api/Dockerfile
