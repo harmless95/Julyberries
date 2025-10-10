@@ -9,6 +9,8 @@ class MiddlewareAuth(BaseHTTPMiddleware):
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
+        if request.url.path in ["/metrics", "/docs", "/openapi.json"]:
+            return await call_next(request)
         auth_header = request.headers.get("Authorization")
         if not auth_header or not auth_header.startswith("Bearer "):
             raise HTTPException(
