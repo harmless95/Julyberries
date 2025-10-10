@@ -105,7 +105,7 @@ services:
 
   postgres_exporter_auth:
     image: prometheuscommunity/postgres-exporter:latest
-    container_name: postgres_exporter
+    container_name: postgres_exporter_auth
     environment:
       DATA_SOURCE_NAME: "postgresql://user:qwe@pg:5432/julyberries_auth?sslmode=disable"
     ports:
@@ -117,7 +117,7 @@ services:
 
   postgres_exporter_catalog:
     image: prometheuscommunity/postgres-exporter:latest
-    container_name: postgres_exporter
+    container_name: postgres_exporter_catalog
     environment:
       DATA_SOURCE_NAME: "postgresql://user:qwe@pg:5432/julyberries_catalog?sslmode=disable"
     ports:
@@ -129,7 +129,7 @@ services:
 
   postgres_exporter_order:
     image: prometheuscommunity/postgres-exporter:latest
-    container_name: postgres_exporter
+    container_name: postgres_exporter_order
     environment:
       DATA_SOURCE_NAME: "postgresql://user:qwe@pg:5432/julyberries_catalog?sslmode=disable"
     ports:
@@ -156,7 +156,7 @@ services:
 
   redis:
     image: redis:latest
-    container_name: redis_julyberries
+    container_name: redis
     command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
     ports:
       - "6380:6379"
@@ -170,6 +170,19 @@ services:
     restart: unless-stopped
     tty: true
     stdin_open: true
+    networks:
+      - backend_network
+
+  redis_exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: redis_exporter
+    environment:
+      - REDIS_ADDR=redis:6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    ports:
+      - "9121:9121"
+    depends_on:
+      - redis
     networks:
       - backend_network
 
@@ -305,7 +318,7 @@ services:
 
   mongo_db:
     image: mongo:latest
-    container_name: "mongo_database"
+    container_name: mongo_db
     ports:
       - "27017:27017"
     volumes:
@@ -316,6 +329,20 @@ services:
       interval: 5s
       timeout: 3s
       retries: 3
+    networks:
+      - backend_network
+
+  mongodb_exporter:
+    image: bitnami/mongodb-exporter:latest
+    container_name: mongodb_exporter
+    environment:
+      - MONGODB_URI=mongodb://mongo_db:27017
+    command:
+      - "--collect-all"
+    ports:
+      - "9216:9216"
+    depends_on:
+      - mongo_db
     networks:
       - backend_network
 
