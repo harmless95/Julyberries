@@ -1,14 +1,17 @@
 import uvicorn
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from contextlib import asynccontextmanager
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
 from aiokafka import AIOKafkaProducer
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
 from core.config import setting
 from api.routers.reviews import router
 from core.models.reviews import Reviews
-from core.authorization.middleware_auth import MiddlewareAuth
+from core.authorization.middleware_auth import AuthMiddleware
+from utils.middleware_prometheus import PrometheusMiddleware
+from utils.exception_middleware import ExceptionHandlingMiddleware
 
 
 @asynccontextmanager
@@ -31,7 +34,14 @@ async def lifespan(app: FastAPI):
 
 app_reviews = FastAPI(lifespan=lifespan)
 app_reviews.include_router(router=router)
-app_reviews.add_middleware(MiddlewareAuth)
+app_reviews.add_middleware(ExceptionHandlingMiddleware)
+app_reviews.add_middleware(AuthMiddleware)
+app_reviews.add_middleware(PrometheusMiddleware)
+
+
+@app_reviews.get("/metrics")
+async def metrics():
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 
 @app_reviews.get("/protected_reviews/")
