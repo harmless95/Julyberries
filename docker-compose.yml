@@ -6,7 +6,10 @@ services:
     working_dir: /auth
     container_name: app_auth
     environment:
-      APP_CONFIG__DB__URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pg:5432/${POSTGRES_DB_AUTH}
+      APP_CONFIG__DB__URL: >
+        postgresql+asyncpg://${POSTGRES_USER:?Error: POSTGRES_USER not set}:
+        ${POSTGRES_PASSWORD:?Error: POSTGRES_PASSWORD not set}@pg:5432/
+        ${POSTGRES_DB_AUTH:?Error: POSTGRES_DB_AUTH not set}
     ports:
       - "${APP_AUTH_PORT}:${CONTAINER_AUTH_PORT}"
     depends_on:
@@ -26,6 +29,18 @@ services:
     networks:
       - backend_network
 
+  postgres_exporter_auth:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: postgres_exporter_auth
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pg:5432/${POSTGRES_DB_AUTH}?sslmode=disable"
+    ports:
+      - "9187:9187"
+    depends_on:
+      - pg
+    networks:
+      - backend_network
+
   catalogs_services:
     build:
       dockerfile: Docker-build/catalog/Dockerfile
@@ -33,7 +48,10 @@ services:
     working_dir: /catalogs_services
     container_name: catalogs_services
     environment:
-      APP_CONFIG__DB__URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pg:5432/${POSTGRES_DB_CATALOG}
+      APP_CONFIG__DB__URL: >
+        postgresql+asyncpg://${POSTGRES_USER:?Error: POSTGRES_USER not set}:
+        ${POSTGRES_PASSWORD:?Error: POSTGRES_PASSWORD not set}@pg:5432/
+        ${POSTGRES_DB_CATALOG:?Error: POSTGRES_DB_CATALOG not set}
     ports:
       - "${APP_CATALOG_PORT}:${CONTAINER_CATALOG_PORT}"
     depends_on:
@@ -59,6 +77,18 @@ services:
     networks:
       - backend_network
 
+  postgres_exporter_catalog:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: postgres_exporter_catalog
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pg:5432/${POSTGRES_DB_CATALOG}?sslmode=disable"
+    ports:
+      - "9188:9187"
+    depends_on:
+      - pg
+    networks:
+      - backend_network
+
   orders_service:
     build:
       dockerfile: Docker-build/order/Dockerfile
@@ -66,7 +96,10 @@ services:
     working_dir: /orders_service
     container_name: orders_service
     environment:
-      APP_CONFIG__DB__URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pg:5432/${POSTGRES_DB_ORDER}
+      APP_CONFIG__DB__URL: >
+        postgresql+asyncpg://${POSTGRES_USER:?Error: POSTGRES_USER not set}:
+        ${POSTGRES_PASSWORD:?Error: POSTGRES_PASSWORD not set}@pg:5432/
+        ${POSTGRES_DB_ORDER:?Error: POSTGRES_DB_ORDER not set}
     ports:
       - "${APP_ORDER_PORT}:${CONTAINER_ORDER_PORT}"
     depends_on:
@@ -83,6 +116,18 @@ services:
       driver: json-file
       options:
         tag: "{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}"
+    networks:
+      - backend_network
+
+  postgres_exporter_order:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: postgres_exporter_order
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pg:5432/${POSTGRES_DB_ORDER}?sslmode=disable"
+    ports:
+      - "9189:9187"
+    depends_on:
+      - pg
     networks:
       - backend_network
 
@@ -106,43 +151,6 @@ services:
       retries: 3
     networks:
       - backend_network
-
-  postgres_exporter_auth:
-    image: prometheuscommunity/postgres-exporter:latest
-    container_name: postgres_exporter_auth
-    environment:
-      DATA_SOURCE_NAME: "postgresql://user:qwe@pg:5432/julyberries_auth?sslmode=disable"
-    ports:
-      - "9187:9187"
-    depends_on:
-      - pg
-    networks:
-      - backend_network
-
-  postgres_exporter_catalog:
-    image: prometheuscommunity/postgres-exporter:latest
-    container_name: postgres_exporter_catalog
-    environment:
-      DATA_SOURCE_NAME: "postgresql://user:qwe@pg:5432/julyberries_catalog?sslmode=disable"
-    ports:
-      - "9188:9187"
-    depends_on:
-      - pg
-    networks:
-      - backend_network
-
-  postgres_exporter_order:
-    image: prometheuscommunity/postgres-exporter:latest
-    container_name: postgres_exporter_order
-    environment:
-      DATA_SOURCE_NAME: "postgresql://user:qwe@pg:5432/julyberries_catalog?sslmode=disable"
-    ports:
-      - "9189:9187"
-    depends_on:
-      - pg
-    networks:
-      - backend_network
-
 
   pgadmin:
     image: dpage/pgadmin4
@@ -233,7 +241,7 @@ services:
     ports:
       - "9094:9094"
     volumes:
-      - ${KAFKA1_VOLUME_PATH:-./volumes_kafka/server-2}:/bitnami/kafka
+      - ${KAFKA2_VOLUME_PATH:-./volumes_kafka/server-2}:/bitnami/kafka
     healthcheck:
       test: [ "CMD", "bash", "-c", "echo > /dev/tcp/localhost/9090 || exit 1" ]
       interval: 10s
@@ -259,7 +267,7 @@ services:
     ports:
       - "9096:9096"
     volumes:
-      - ${KAFKA1_VOLUME_PATH:-./volumes_kafka/server-3}:/bitnami/kafka
+      - ${KAFKA3_VOLUME_PATH:-./volumes_kafka/server-3}:/bitnami/kafka
     healthcheck:
       test: [ "CMD", "bash", "-c", "echo > /dev/tcp/localhost/9090 || exit 1" ]
       interval: 10s
