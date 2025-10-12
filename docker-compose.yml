@@ -41,6 +41,10 @@ services:
         condition: service_healthy
       kafka1:
         condition: service_healthy
+      kafka2:
+        condition: service_healthy
+      kafka3:
+        condition: service_healthy
     develop:
       watch:
         - action: sync+restart
@@ -205,11 +209,11 @@ services:
     volumes:
       - ${KAFKA1_VOLUME_PATH:-./volumes_kafka/server-1}:/bitnami/kafka
     healthcheck:
-      test: ["CMD-SHELL", "bash -c '</dev/tcp/localhost/9092'"]
+      test: [ "CMD", "bash", "-c", "echo > /dev/tcp/localhost/9090 || exit 1" ]
       interval: 10s
-      timeout: 5s
+      timeout: 3s
       retries: 5
-      start_period: 40s
+      start_period: 20s
     networks:
       - backend_network
 
@@ -230,6 +234,12 @@ services:
       - "9094:9094"
     volumes:
       - ${KAFKA1_VOLUME_PATH:-./volumes_kafka/server-2}:/bitnami/kafka
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "echo > /dev/tcp/localhost/9090 || exit 1" ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 20s
     networks:
       - backend_network
 
@@ -250,6 +260,12 @@ services:
       - "9096:9096"
     volumes:
       - ${KAFKA1_VOLUME_PATH:-./volumes_kafka/server-3}:/bitnami/kafka
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "echo > /dev/tcp/localhost/9090 || exit 1" ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 20s
     networks:
       - backend_network
 
@@ -330,6 +346,10 @@ services:
         condition: service_healthy
       kafka1:
         condition: service_healthy
+    logging:
+      driver: json-file
+      options:
+        tag: "{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}"
     networks:
       - backend_network
 
