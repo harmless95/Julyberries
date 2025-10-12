@@ -322,6 +322,7 @@ services:
     build:
       dockerfile: Docker-build/reviews/Dockerfile
       context: .
+    container_name: reviews
     ports:
       - "5356:8000"
     depends_on:
