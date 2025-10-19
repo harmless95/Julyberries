@@ -6,10 +6,7 @@ services:
     working_dir: /auth
     container_name: app_auth
     environment:
-      APP_CONFIG__DB__URL: >
-        postgresql+asyncpg://${POSTGRES_USER:?Error: POSTGRES_USER not set}:
-        ${POSTGRES_PASSWORD:?Error: POSTGRES_PASSWORD not set}@pg:5432/
-        ${POSTGRES_DB_AUTH:?Error: POSTGRES_DB_AUTH not set}
+      APP_CONFIG__DB__URL: "postgresql+asyncpg://${POSTGRES_USER:?Error: POSTGRES_USER not set}:${POSTGRES_PASSWORD:?Error: POSTGRES_PASSWORD not set}@pg:5432/${POSTGRES_DB_AUTH:?Error: POSTGRES_DB_AUTH not set}"
     ports:
       - "${APP_AUTH_PORT}:${CONTAINER_AUTH_PORT}"
     depends_on:
@@ -48,10 +45,7 @@ services:
     working_dir: /catalogs_services
     container_name: catalogs_services
     environment:
-      APP_CONFIG__DB__URL: >
-        postgresql+asyncpg://${POSTGRES_USER:?Error: POSTGRES_USER not set}:
-        ${POSTGRES_PASSWORD:?Error: POSTGRES_PASSWORD not set}@pg:5432/
-        ${POSTGRES_DB_CATALOG:?Error: POSTGRES_DB_CATALOG not set}
+      APP_CONFIG__DB__URL: "postgresql+asyncpg://${POSTGRES_USER:?Error: POSTGRES_USER not set}:${POSTGRES_PASSWORD:?Error: POSTGRES_PASSWORD not set}@pg:5432/${POSTGRES_DB_CATALOG:?Error: POSTGRES_DB_CATALOG not set}"
     ports:
       - "${APP_CATALOG_PORT}:${CONTAINER_CATALOG_PORT}"
     depends_on:
@@ -96,10 +90,7 @@ services:
     working_dir: /orders_service
     container_name: orders_service
     environment:
-      APP_CONFIG__DB__URL: >
-        postgresql+asyncpg://${POSTGRES_USER:?Error: POSTGRES_USER not set}:
-        ${POSTGRES_PASSWORD:?Error: POSTGRES_PASSWORD not set}@pg:5432/
-        ${POSTGRES_DB_ORDER:?Error: POSTGRES_DB_ORDER not set}
+      APP_CONFIG__DB__URL: "postgresql+asyncpg://${POSTGRES_USER:?Error: POSTGRES_USER not set}:${POSTGRES_PASSWORD:?Error: POSTGRES_PASSWORD not set}@pg:5432/${POSTGRES_DB_ORDER:?Error: POSTGRES_DB_ORDER not set}"
     ports:
       - "${APP_ORDER_PORT}:${CONTAINER_ORDER_PORT}"
     depends_on:
