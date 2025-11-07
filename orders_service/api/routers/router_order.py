@@ -2,7 +2,10 @@ from typing import Annotated
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, status, Request
+from aiokafka import AIOKafkaProducer
 
+
+from api.Dependencies import get_producer, order_producer
 from api.CRUD.crud_order import get_order, create_order, update_order_by_id
 from core.model import helper_db, Order
 from core.schemas.schema_orders import OrderRead, OrderCreate, OrderUpdate
@@ -31,9 +34,11 @@ async def get_order_by_id(
 async def create_new_order(
     request: Request,
     session: Annotated[AsyncSession, Depends(helper_db.session_getter)],
+    producer: Annotated[AIOKafkaProducer, Depends(get_producer)],
     data_order: OrderCreate,
 ) -> Order:
     order = await create_order(session=session, data_order=data_order, request=request)
+    await order_producer(data_order=order, producer=producer, topic="ORDER_CREATED")
     return order
 
 
@@ -44,6 +49,7 @@ async def create_new_order(
 )
 async def update_order(
     session: Annotated[AsyncSession, Depends(helper_db.session_getter)],
+    producer: Annotated[AIOKafkaProducer, Depends(get_producer)],
     data_update: OrderUpdate,
     data_order: Order = Depends(get_order_by_id),
 ) -> OrderRead:
@@ -52,6 +58,9 @@ async def update_order(
         data_update=data_update,
         data_order=data_order,
         partial=True,
+    )
+    await order_producer(
+        data_order=result_update, producer=producer, topic="ORDER_UPDATED"
     )
     return OrderRead.model_validate(result_update)
 
