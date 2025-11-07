@@ -4,6 +4,7 @@ import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, Response
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+from aiokafka import AIOKafkaProducer
 
 from core.config import setting
 from core.model import helper_db
@@ -20,8 +21,14 @@ logging.basicConfig(
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    producer = AIOKafkaProducer(
+        bootstrap_servers=["kafka1:9090"], client_id="order-app"
+    )
+    await producer.start()
+    app.state.producer = producer
     yield
     await helper_db.dispose()
+    await producer.stop()
 
 
 app_orders_main = FastAPI(lifespan=lifespan)
